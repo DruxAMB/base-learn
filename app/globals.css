@@ -85,4 +85,17 @@ body,
   font-size: 16px !important;
 }
 
+.spin {
+  animation: spin 0.5s linear;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(-45deg);
+  }
+  to {
+    transform: rotate(45deg);
+  }
+}
+
 @import "~@uploadthing/react/styles.css"

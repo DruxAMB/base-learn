@@ -50,6 +50,7 @@ const CourseIdPage = async ({
       name: "asc",
     },
   });
+  
 
   if (!course) {
     return redirect("/");
