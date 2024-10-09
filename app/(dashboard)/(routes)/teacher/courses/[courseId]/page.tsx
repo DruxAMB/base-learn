@@ -1,8 +1,8 @@
 import { auth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 import { CircleDollarSign, File, LayoutDashboard, ListChecks } from "lucide-react";
+import { Types } from 'mongoose';
 
-import { db } from "@/lib/db";
 import { IconBadge } from "@/components/icon-badge";
 import { Banner } from "@/components/banner";
 
@@ -14,6 +14,8 @@ import { PriceForm } from "./_components/price-form";
 import { AttachmentForm } from "./_components/attachment-form";
 import { ChaptersForm } from "./_components/chapters-form";
 import { Actions } from "./_components/actions";
+import { Course } from "@/mongodb/Course";
+import { Category } from "@/mongodb/Category";
 
 const CourseIdPage = async ({
   params
@@ -26,31 +28,15 @@ const CourseIdPage = async ({
     return redirect("/");
   }
 
-  const course = await db.course.findUnique({
-    where: {
-      id: params.courseId,
-      userId
-    },
-    include: {
-      chapters: {
-        orderBy: {
-          position: "asc",
-        },
-      },
-      attachments: {
-        orderBy: {
-          createdAt: "desc",
-        },
-      },
-    },
-  });
+  const course = await Course.findOne({
+    _id: new Types.ObjectId(params.courseId),
+    userId
+  }).populate([
+    { path: 'chapters', options: { sort: { position: 1 } } },
+    { path: 'attachments', options: { sort: { createdAt: -1 } } }
+  ]);
 
-  const categories = await db.category.findMany({
-    orderBy: {
-      name: "asc",
-    },
-  });
-  
+  const categories = await Category.find().sort({ name: 1 });
 
   if (!course) {
     return redirect("/");
@@ -62,7 +48,7 @@ const CourseIdPage = async ({
     course.imageUrl,
     course.price,
     course.categoryId,
-    course.chapters.some(chapter => chapter.isPublished),
+    course.chapters.some((chapter: { isPublished: boolean }) => chapter.isPublished),
   ];
 
   const totalFields = requiredFields.length;

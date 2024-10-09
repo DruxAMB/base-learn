@@ -1,10 +1,16 @@
-import mongoose from 'mongoose';
+import { Schema, model, models, Document, Model, Types } from 'mongoose';
 
-const categorySchema = new mongoose.Schema({
-    id: { type: String, required: true, default: () => new mongoose.Types.ObjectId() },
-    name: { type: String, required: true, unique: true },
-    courses: [{ type: String, ref: 'Course' }] // Reference to Course
-  });
-  
-  export const Category = mongoose.models.Category || mongoose.model('Category', categorySchema);
-  
+// Define the interface for the Category document
+export interface ICategory extends Document {
+  name: string;
+  courses: string[]; // Array of strings representing Course IDs
+}
+
+// Define the Mongoose schema with TypeScript support
+const categorySchema = new Schema<ICategory>({
+  name: { type: String, required: true, unique: true },
+  courses: [{ type: String, ref: 'Course' }] // Array of references to Course
+});
+
+// Define and export the Category model with the interface
+export const Category: Model<ICategory> = models.Category || model<ICategory>('Category', categorySchema);

@@ -1,11 +1,13 @@
-import { Category, Chapter, Course } from "@prisma/client";
+import { Purchase } from "@/mongodb/Purchase";
+import { ICourse } from "@/mongodb/Course";
+import {  IChapter } from "@/mongodb/Chapter";
 
-import { db } from "@/lib/db";
 import { getProgress } from "@/actions/get-progress";
+import { ICategory } from "@/mongodb/Category";
 
-type CourseWithProgressWithCategory = Course & {
-  category: Category;
-  chapters: Chapter[];
+type CourseWithProgressWithCategory = ICourse & {
+  category: ICategory;
+  chapters: IChapter[];
   progress: number | null;
 };
 
@@ -16,29 +18,21 @@ type DashboardCourses = {
 
 export const getDashboardCourses = async (userId: string): Promise<DashboardCourses> => {
   try {
-    const purchasedCourses = await db.purchase.findMany({
-      where: {
-        userId: userId,
-      },
-      select: {
-        course: {
-          include: {
-            category: true,
-            chapters: {
-              where: {
-                isPublished: true,
-              }
-            }
-          }
-        }
-      }
-    });
+    const purchasedCourses = await Purchase.find({ userId })
+      .populate({
+        path: 'courseId',
+        populate: [
+          { path: 'category' },
+          { path: 'chapters', match: { isPublished: true } }
+        ]
+      })
+      .lean();
 
-    const courses = purchasedCourses.map((purchase) => purchase.course) as CourseWithProgressWithCategory[];
+    const courses = purchasedCourses.map(purchase => purchase.courseId as unknown as CourseWithProgressWithCategory);
 
     for (let course of courses) {
       const progress = await getProgress(userId, course.id);
-      course["progress"] = progress;
+      course.progress = progress;
     }
 
     const completedCourses = courses.filter((course) => course.progress === 100);
