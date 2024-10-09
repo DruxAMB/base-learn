@@ -1,14 +1,29 @@
-import mongoose from 'mongoose';
+import { Schema, model, models, Document, Model, Types } from 'mongoose';
 
-const courseSchema = new mongoose.Schema({
+// Define the interface for the Course document
+export interface ICourse extends Document {
+  title: string;
+  description?: string | null;
+  imageUrl?: string | null;
+  price?: number | null;
+  isPublished: boolean;
+  categoryId: string | null; // Reference to Category as string
+  chapters: Types.ObjectId[]; // Array of ObjectIds referencing Chapter
+  purchases: Types.ObjectId[]; // Array of ObjectIds referencing Purchase
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Define the Mongoose schema with TypeScript support
+const courseSchema = new Schema<ICourse>({
   title: { type: String, required: true },
   description: { type: String, default: null },
   imageUrl: { type: String, default: null },
   price: { type: Number, default: null },
   isPublished: { type: Boolean, default: false },
   categoryId: { type: String, ref: 'Category', default: null }, // Reference to Category
-  chapters: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Chapter' }], // Reference to Chapter
-  purchases: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Purchase' }], // Reference to Purchase
+  chapters: [{ type: Types.ObjectId, ref: 'Chapter' }], // Reference to Chapter
+  purchases: [{ type: Types.ObjectId, ref: 'Purchase' }], // Reference to Purchase
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });
@@ -16,5 +31,5 @@ const courseSchema = new mongoose.Schema({
 // Index on categoryId for faster queries
 courseSchema.index({ categoryId: 1 });
 
-// Check if model already exists to prevent overwriting
-export const Course = mongoose.models.Course || mongoose.model('Course', courseSchema);
+// Define and export the Course model with the interface
+export const Course: Model<ICourse> = models.Course || model<ICourse>('Course', courseSchema);

@@ -1,5 +1,10 @@
-import { db } from "@/lib/db";
-import { Attachment, Chapter } from "@prisma/client";
+import { Purchase } from "@/mongodb/Purchase"; // Mongoose Purchase model
+import { Course } from "@/mongodb/Course"; // Mongoose Course model
+import { Chapter } from "@/mongodb/Chapter"; // Mongoose Chapter model
+import { Attachment } from "@/mongodb/Attachment"; // Mongoose Attachment model
+import { MuxData } from "@/mongodb/MuxData"; // Mongoose MuxData model
+import { UserProgress } from "@/mongodb/UserProgress"; // Mongoose UserProgress model
+import mongoose from 'mongoose';
 
 interface GetChapterProps {
   userId: string;
@@ -13,77 +18,63 @@ export const getChapter = async ({
   chapterId,
 }: GetChapterProps) => {
   try {
-    const purchase = await db.purchase.findUnique({
-      where: {
-        userId_courseId: {
-          userId,
-          courseId,
-        }
-      }
-    });
+    // Check if the user has purchased the course
+    const purchase = await Purchase.findOne({
+      userId,
+      courseId: new mongoose.Types.ObjectId(courseId),
+    }).lean();
 
-    const course = await db.course.findUnique({
-      where: {
-        isPublished: true,
-        id: courseId,
-      },
-      select: {
-        price: true,
-      }
-    });
+    // Fetch the course details (including its price)
+    const course = await Course.findOne({
+      _id: new mongoose.Types.ObjectId(courseId),
+      isPublished: true,
+    })
+      .select('price')
+      .lean();
 
-    const chapter = await db.chapter.findUnique({
-      where: {
-        id: chapterId,
-        isPublished: true,
-      }
-    });
+    // Fetch the specific chapter
+    const chapter = await Chapter.findOne({
+      _id: new mongoose.Types.ObjectId(chapterId),
+      isPublished: true,
+    }).lean();
 
     if (!chapter || !course) {
       throw new Error("Chapter or course not found");
     }
 
     let muxData = null;
-    let attachments: Attachment[] = [];
-    let nextChapter: Chapter | null = null;
+    let attachments: any[] = [];
+    let nextChapter: any | null = null;
 
+    // If the user purchased the course, fetch all the attachments
     if (purchase) {
-      attachments = await db.attachment.findMany({
-        where: {
-          courseId: courseId
-        }
-      });
+      attachments = await Attachment.find({
+        courseId: new mongoose.Types.ObjectId(courseId),
+      }).lean();
     }
 
+    // If the chapter is free or if the user purchased the course
     if (chapter.isFree || purchase) {
-      muxData = await db.muxData.findUnique({
-        where: {
-          chapterId: chapterId,
-        }
-      });
+      // Fetch MuxData for the chapter
+      muxData = await MuxData.findOne({
+        chapterId: new mongoose.Types.ObjectId(chapterId),
+      }).lean();
 
-      nextChapter = await db.chapter.findFirst({
-        where: {
-          courseId: courseId,
-          isPublished: true,
-          position: {
-            gt: chapter?.position,
-          }
-        },
-        orderBy: {
-          position: "asc",
-        }
-      });
+      // Fetch the next chapter based on its position
+      nextChapter = await Chapter.findOne({
+        courseId: new mongoose.Types.ObjectId(courseId),
+        isPublished: true,
+        position: { $gt: chapter.position },
+      })
+        .sort({ position: 'asc' })
+        .lean();
     }
 
-    const userProgress = await db.userProgress.findUnique({
-      where: {
-        userId_chapterId: {
-          userId,
-          chapterId,
-        }
-      }
-    });
+    // Fetch the user's progress on the chapter
+    const userProgress = await UserProgress.findOne({
+      userId,
+      chapterId: new mongoose.Types.ObjectId(chapterId),
+    }).lean();
 
     return {
       chapter,
@@ -104,6 +95,6 @@ export const getChapter = async ({
       nextChapter: null,
       userProgress: null,
       purchase: null,
-    }
+    };
   }
-}
+};

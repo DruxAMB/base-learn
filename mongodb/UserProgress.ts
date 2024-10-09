@@ -1,16 +1,26 @@
-import mongoose from 'mongoose';
+import { Schema,  Document, Types, Model, model, models } from 'mongoose';
 
-const userProgressSchema = new mongoose.Schema({
-    id: { type: String, required: true, default: () => new mongoose.Types.ObjectId() },
-    userId: { type: String, required: true },
-    chapterId: { type: String, ref: 'Chapter', required: true },
-    isCompleted: { type: Boolean, default: false },
-    createdAt: { type: Date, default: Date.now },
-    updatedAt: { type: Date, default: Date.now },
-  });
-  
-  // Unique index on userId and chapterId to ensure each user can only have one progress entry per chapter
-  userProgressSchema.index({ userId: 1, chapterId: 1 }, { unique: true });
-  
-  export const UserProgress = mongoose.models.UserProgress || mongoose.model('UserProgress', userProgressSchema);
-  
+// Define the interface for the UserProgress document
+export interface IUserProgress extends Document {
+  id: string;
+  userId: string;
+  chapterId: Types.ObjectId; // Reference to Chapter as ObjectId
+  isCompleted: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Define the Mongoose schema with TypeScript support
+const userProgressSchema = new Schema<IUserProgress>({
+  userId: { type: String, required: true },
+  chapterId: { type: Schema.Types.ObjectId, ref: 'Chapter', required: true }, // Reference to Chapter
+  isCompleted: { type: Boolean, default: false },
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now },
+});
+
+// Unique index on userId and chapterId to ensure each user can only have one progress entry per chapter
+userProgressSchema.index({ userId: 1, chapterId: 1 }, { unique: true });
+
+// Define and
+export const UserProgress: Model<IUserProgress> = models.UserProgress || model<IUserProgress>('UserProgress', userProgressSchema);

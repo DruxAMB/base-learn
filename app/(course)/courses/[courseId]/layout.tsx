@@ -1,7 +1,7 @@
 import { auth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 
-import { db } from "@/lib/db";
+import { Course } from "@/mongodb/Course"; // Import the Mongoose Course model
 import { getProgress } from "@/actions/get-progress";
 
 import { CourseSidebar } from "./_components/course-sidebar";
@@ -17,37 +17,26 @@ const CourseLayout = async ({
   const { userId } = auth();
 
   if (!userId) {
-    return redirect("/")
+    return redirect("/");
   }
 
-  const course = await db.course.findUnique({
-    where: {
-      id: params.courseId,
-    },
-    include: {
-      chapters: {
-        where: {
-          isPublished: true,
-        },
-        include: {
-          userProgress: {
-            where: {
-              userId,
-            }
-          }
-        },
-        orderBy: {
-          position: "asc"
-        }
+  const course = await Course.findById(params.courseId)
+    .populate({
+      path: 'chapters',
+      match: { isPublished: true },
+      populate: {
+        path: 'userProgress',
+        match: { userId }
       },
-    },
-  });
+      options: { sort: { position: 1 } }
+    })
+    .lean() as any; // Add type assertion here
 
   if (!course) {
     return redirect("/");
   }
 
-  const progressCount = await getProgress(userId, course.id);
+  const progressCount = await getProgress(userId, course._id);
 
   return (
     <div className="h-full">
