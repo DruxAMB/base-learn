@@ -14,9 +14,8 @@ const attachmentSchema = new Schema<IAttachment>({
   name: { type: String, required: true },
   url: { type: String, required: true },
   courseId: { type: Schema.Types.ObjectId, ref: 'Course', required: true }, // Reference to Course
-  createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now },
-});
+  
+},  { timestamps: true });
 
 // Index on courseId for faster queries
 attachmentSchema.index({ courseId: 1 });

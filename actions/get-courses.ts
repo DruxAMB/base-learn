@@ -1,5 +1,5 @@
 import { Course } from "@/mongodb/Course"; // Mongoose Course model
-import { Category, ICategory } from "@/mongodb/Category"; // Mongoose Category model
+import {  ICategory } from "@/mongodb/Category"; // Mongoose Category model
 import { getProgress } from "@/actions/get-progress";
 
 type CourseWithProgressWithCategory = {

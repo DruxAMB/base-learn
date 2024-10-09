@@ -12,9 +12,8 @@ export interface IStripeCustomer extends Document {
 const stripeCustomerSchema = new Schema<IStripeCustomer>({
   userId: { type: String, required: true, unique: true },
   stripeCustomerId: { type: String, required: true, unique: true },
-  createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now },
-});
+ 
+},  { timestamps: true });
 
 // Define and export the StripeCustomer model with the interface
 export const StripeCustomer: Model<IStripeCustomer> = models.StripeCustomer || model<IStripeCustomer>('StripeCustomer', stripeCustomerSchema);

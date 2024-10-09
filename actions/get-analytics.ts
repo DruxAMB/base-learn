@@ -1,6 +1,4 @@
 import { Purchase } from "@/mongodb/Purchase"; // Mongoose Purchase model
-import { Course } from "@/mongodb/Course"; // Mongoose Course model
-import mongoose from "mongoose";
 
 // Define the PurchaseWithCourse type for Mongoose
 type PurchaseWithCourse = {

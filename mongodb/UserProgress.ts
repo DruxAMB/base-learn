@@ -15,9 +15,8 @@ const userProgressSchema = new Schema<IUserProgress>({
   userId: { type: String, required: true },
   chapterId: { type: Schema.Types.ObjectId, ref: 'Chapter', required: true }, // Reference to Chapter
   isCompleted: { type: Boolean, default: false },
-  createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now },
-});
+ 
+},  { timestamps: true });
 
 // Unique index on userId and chapterId to ensure each user can only have one progress entry per chapter
 userProgressSchema.index({ userId: 1, chapterId: 1 }, { unique: true });

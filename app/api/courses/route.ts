@@ -19,8 +19,6 @@ export async function POST(
        const newCourse = new Course({
          userId,
          title,
-         createdAt: new Date(),
-         updatedAt: new Date(),
        });
    
        // Save the course in the database
