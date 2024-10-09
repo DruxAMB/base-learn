@@ -1,8 +1,11 @@
 import Mux from "@mux/mux-node";
 import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
+import mongoose from "mongoose";
+import { Course } from "@/mongodb/Course";
+import { Chapter } from "@/mongodb/Chapter";
+import { MuxData } from "@/mongodb/MuxData";
 
-import { db } from "@/lib/db";
 
 const { Video } = new Mux(
   process.env.MUX_TOKEN_ID!,
@@ -20,22 +23,18 @@ export async function DELETE(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const ownCourse = await db.course.findUnique({
-      where: {
-        id: params.courseId,
-        userId,
-      }
+    const ownCourse = await Course.findOne({
+      _id: params.courseId,
+      userId,
     });
 
     if (!ownCourse) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const chapter = await db.chapter.findUnique({
-      where: {
-        id: params.chapterId,
-        courseId: params.courseId,
-      }
+    const chapter = await Chapter.findOne({
+      _id: params.chapterId,
+      courseId: params.courseId,
     });
 
     if (!chapter) {
@@ -43,43 +42,26 @@ export async function DELETE(
     }
 
     if (chapter.videoUrl) {
-      const existingMuxData = await db.muxData.findFirst({
-        where: {
-          chapterId: params.chapterId,
-        }
+      const existingMuxData = await MuxData.findOne({
+        chapterId: params.chapterId,
       });
 
       if (existingMuxData) {
         await Video.Assets.del(existingMuxData.assetId);
-        await db.muxData.delete({
-          where: {
-            id: existingMuxData.id,
-          }
-        });
+        await MuxData.findByIdAndDelete(existingMuxData._id);
       }
     }
 
-    const deletedChapter = await db.chapter.delete({
-      where: {
-        id: params.chapterId
-      }
-    });
+    const deletedChapter = await Chapter.findByIdAndDelete(params.chapterId);
 
-    const publishedChaptersInCourse = await db.chapter.findMany({
-      where: {
-        courseId: params.courseId,
-        isPublished: true,
-      }
+    const publishedChaptersInCourse = await Chapter.find({
+      courseId: params.courseId,
+      isPublished: true,
     });
 
     if (!publishedChaptersInCourse.length) {
-      await db.course.update({
-        where: {
-          id: params.courseId,
-        },
-        data: {
-          isPublished: false,
-        }
+      await Course.findByIdAndUpdate(params.courseId, {
+        isPublished: false,
       });
     }
 
@@ -102,41 +84,34 @@ export async function PATCH(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const ownCourse = await db.course.findUnique({
-      where: {
-        id: params.courseId,
-        userId
-      }
+    const ownCourse = await Course.findOne({
+      _id: params.courseId,
+      userId
     });
 
     if (!ownCourse) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const chapter = await db.chapter.update({
-      where: {
-        id: params.chapterId,
+    const chapter = await Chapter.findOneAndUpdate(
+      {
+        _id: params.chapterId,
         courseId: params.courseId,
       },
-      data: {
+      {
         ...values,
-      }
-    });
+      },
+      { new: true }
+    );
 
     if (values.videoUrl) {
-      const existingMuxData = await db.muxData.findFirst({
-        where: {
-          chapterId: params.chapterId,
-        }
+      const existingMuxData = await MuxData.findOne({
+        chapterId: params.chapterId,
       });
 
       if (existingMuxData) {
         await Video.Assets.del(existingMuxData.assetId);
-        await db.muxData.delete({
-          where: {
-            id: existingMuxData.id,
-          }
-        });
+        await MuxData.findByIdAndDelete(existingMuxData._id);
       }
 
       const asset = await Video.Assets.create({
@@ -145,12 +120,10 @@ export async function PATCH(
         test: false,
       });
 
-      await db.muxData.create({
-        data: {
-          chapterId: params.chapterId,
-          assetId: asset.id,
-          playbackId: asset.playback_ids?.[0]?.id,
-        }
+      await MuxData.create({
+        chapterId: params.chapterId,
+        assetId: asset.id,
+        playbackId: asset.playback_ids?.[0]?.id,
       });
     }
 

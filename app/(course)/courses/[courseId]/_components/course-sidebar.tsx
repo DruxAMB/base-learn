@@ -1,20 +1,23 @@
 import { auth } from "@clerk/nextjs";
-import { Chapter, Course, UserProgress } from "@prisma/client"
 import { redirect } from "next/navigation";
 
-import { db } from "@/lib/db";
 import { CourseProgress } from "@/components/course-progress";
-
 import { CourseSidebarItem } from "./course-sidebar-item";
+import { ICourse } from "@/mongodb/Course"; // Mongoose Course interface
+import { Chapter, IChapter } from "@/mongodb/Chapter"; // Mongoose Chapter interface
+import { IUserProgress } from "@/mongodb/UserProgress"; // Mongoose UserProgress interface
+import { Purchase } from "@/mongodb/Purchase"; // Mongoose Purchase model
+import mongoose from "mongoose"; // For ObjectId handling
+import getChaptersForCourse from "@/actions/get-chapters-courses";
 
 interface CourseSidebarProps {
-  course: Course & {
-    chapters: (Chapter & {
-      userProgress: UserProgress[] | null;
-    })[]
+  course: ICourse & {
+    chapters: (IChapter & {
+      userProgress: IUserProgress[] | null;
+    })[];
   };
   progressCount: number;
-};
+}
 
 export const CourseSidebar = async ({
   course,
@@ -26,14 +29,18 @@ export const CourseSidebar = async ({
     return redirect("/");
   }
 
-  const purchase = await db.purchase.findUnique({
-    where: {
-      userId_courseId: {
-        userId,
-        courseId: course.id,
-      }
-    }
-  });
+  // Fetch purchase record for the user and course
+  const purchase = await Purchase.findOne({
+    userId: userId,
+    courseId: course._id // Convert course._id to ObjectId
+  }).lean();
+
+  const chapters = await Chapter.find({
+    courseId: course._id, // Filter chapters by courseId
+    isPublished: true, // Optional: Only return published chapters
+  })
+  .populate('userProgress') // Populate userProgress for each chapter
+  .lean();
 
   return (
     <div className="h-full border-r flex flex-col overflow-y-auto shadow-sm">
@@ -51,17 +58,16 @@ export const CourseSidebar = async ({
         )}
       </div>
       <div className="flex flex-col w-full">
-        {course.chapters.map((chapter) => (
+        {chapters.map((chapter) => (
           <CourseSidebarItem
-            key={chapter.id}
-            id={chapter.id}
+            id={chapter._id.toString()} // Ensure _id is correctly converted to string
             label={chapter.title}
             isCompleted={!!chapter.userProgress?.[0]?.isCompleted}
-            courseId={course.id}
+            courseId={course._id as string} // Ensure courseId is treated as a string
             isLocked={!chapter.isFree && !purchase}
           />
         ))}
       </div>
     </div>
-  )
-}
+  );
+};

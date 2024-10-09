@@ -12,9 +12,8 @@ export interface IPurchase extends Document {
 const purchaseSchema = new Schema<IPurchase>({
   userId: { type: String, required: true },
   courseId: { type: Schema.Types.ObjectId, ref: 'Course', required: true }, // Reference to Course
-  createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now },
-});
+  
+},  { timestamps: true });
 
 // Unique index on userId and courseId to prevent duplicate purchases
 purchaseSchema.index({ userId: 1, courseId: 1 }, { unique: true });

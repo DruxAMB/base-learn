@@ -10,7 +10,7 @@ export interface ICategory extends Document {
 const categorySchema = new Schema<ICategory>({
   name: { type: String, required: true, unique: true },
   courses: [{ type: String, ref: 'Course' }] // Array of references to Course
-});
+},  { timestamps: true });
 
 // Define and export the Category model with the interface
 export const Category: Model<ICategory> = models.Category || model<ICategory>('Category', categorySchema);

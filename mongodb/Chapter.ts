@@ -22,9 +22,8 @@ const chapterSchema = new Schema<IChapter>({
   isPublished: { type: Boolean, default: false },
   isFree: { type: Boolean, default: false },
   courseId: { type: Schema.Types.ObjectId, ref: 'Course', required: true }, // Reference to Course
-  createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now },
-});
+ 
+},  { timestamps: true });
 
 // Index on courseId for faster queries
 chapterSchema.index({ courseId: 1 });

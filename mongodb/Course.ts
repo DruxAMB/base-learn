@@ -21,12 +21,11 @@ const courseSchema = new Schema<ICourse>({
   imageUrl: { type: String, default: null },
   price: { type: Number, default: null },
   isPublished: { type: Boolean, default: false },
-  categoryId: { type: String, ref: 'Category', default: null }, // Reference to Category
+  categoryId: { type: Schema.ObjectId, ref: 'Category', default: null }, // Reference to Category
   chapters: [{ type: Types.ObjectId, ref: 'Chapter' }], // Reference to Chapter
   purchases: [{ type: Types.ObjectId, ref: 'Purchase' }], // Reference to Purchase
-  createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now },
-});
+ 
+},  { timestamps: true });
 
 // Index on categoryId for faster queries
 courseSchema.index({ categoryId: 1 });

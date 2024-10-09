@@ -1,7 +1,8 @@
 import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 
-import { db } from "@/lib/db";
+import { Course } from "@/mongodb/Course";
+import { Chapter, IChapter } from "@/mongodb/Chapter";
 
 export async function PATCH(
   req: Request,
@@ -14,39 +15,35 @@ export async function PATCH(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const course = await db.course.findUnique({
-      where: {
-        id: params.courseId,
-        userId,
-      },
-      include: {
-        chapters: {
-          include: {
-            muxData: true,
-          }
-        }
-      }
+    const course = await Course.findOne({
+      _id: params.courseId,
+      userId,
+    }).populate({
+      path: 'chapters',
+      model: Chapter,
+      select: '-__v', // Select all fields except __v
     });
 
     if (!course) {
       return new NextResponse("Not found", { status: 404 });
     }
 
-    const hasPublishedChapter = course.chapters.some((chapter) => chapter.isPublished);
+    const hasPublishedChapter = (course.chapters as unknown as IChapter[]).some((chapter) => chapter.isPublished);
 
     if (!course.title || !course.description || !course.imageUrl || !course.categoryId || !hasPublishedChapter) {
       return new NextResponse("Missing required fields", { status: 401 });
     }
 
-    const publishedCourse = await db.course.update({
-      where: {
-        id: params.courseId,
+    const publishedCourse = await Course.findOneAndUpdate(
+      {
+        _id: params.courseId,
         userId,
       },
-      data: {
+      {
         isPublished: true,
-      }
-    });
+      },
+      { new: true }
+    );
 
     return NextResponse.json(publishedCourse);
   } catch (error) {

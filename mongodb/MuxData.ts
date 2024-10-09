@@ -12,7 +12,7 @@ const muxDataSchema = new Schema<IMuxData>({
   assetId: { type: String, required: true },
   playbackId: { type: String, default: null },
   chapterId: { type: Schema.Types.ObjectId, ref: 'Chapter', unique: true, required: true }, // Unique reference to Chapter
-});
+},  { timestamps: true });
 
 // Define and export the MuxData model with the interface
 export const MuxData: Model<IMuxData> = models.MuxData || model<IMuxData>('MuxData', muxDataSchema);
