@@ -2,7 +2,6 @@ import { Purchase } from "@/mongodb/Purchase"; // Mongoose Purchase model
 import { Course } from "@/mongodb/Course"; // Mongoose Course model
 import { Chapter } from "@/mongodb/Chapter"; // Mongoose Chapter model
 import { Attachment } from "@/mongodb/Attachment"; // Mongoose Attachment model
-import { MuxData } from "@/mongodb/MuxData"; // Mongoose MuxData model
 import { UserProgress } from "@/mongodb/UserProgress"; // Mongoose UserProgress model
 import mongoose from 'mongoose';
 
@@ -56,10 +55,7 @@ export const getChapter = async ({
     // If the chapter is free or if the user purchased the course
     if (chapter.isFree || purchase) {
       // Fetch MuxData for the chapter
-      muxData = await MuxData.findOne({
-        chapterId: new mongoose.Types.ObjectId(chapterId),
-      }).lean();
-
+     
       // Fetch the next chapter based on its position
       nextChapter = await Chapter.findOne({
         courseId: new mongoose.Types.ObjectId(courseId),
