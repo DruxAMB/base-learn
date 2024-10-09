@@ -1,10 +1,12 @@
-import { Category, Course } from "@prisma/client";
 
 import { CourseCard } from "@/components/course-card";
+import { ICategory } from "@/mongodb/Category";
+import { IChapter } from "@/mongodb/Chapter";
+import { ICourse } from "@/mongodb/Course";
 
-type CourseWithProgressWithCategory = Course & {
-  category: Category | null;
-  chapters: { id: string }[];
+type CourseWithProgressWithCategory = ICourse & {
+  category: ICategory;
+  chapters: IChapter[];
   progress: number | null;
 };
 

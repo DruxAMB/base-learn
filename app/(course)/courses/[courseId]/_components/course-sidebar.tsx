@@ -1,20 +1,17 @@
 import { auth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 
+import { ICourse } from "@/mongodb/Course";
+import { Chapter, IChapter } from "@/mongodb/Chapter";
+import { Purchase } from "@/mongodb/Purchase";
 import { CourseProgress } from "@/components/course-progress";
+import { UserProgress } from "@/mongodb/UserProgress";
+
 import { CourseSidebarItem } from "./course-sidebar-item";
-import { ICourse } from "@/mongodb/Course"; // Mongoose Course interface
-import { Chapter, IChapter } from "@/mongodb/Chapter"; // Mongoose Chapter interface
-import { IUserProgress } from "@/mongodb/UserProgress"; // Mongoose UserProgress interface
-import { Purchase } from "@/mongodb/Purchase"; // Mongoose Purchase model
-import mongoose from "mongoose"; // For ObjectId handling
-import getChaptersForCourse from "@/actions/get-chapters-courses";
 
 interface CourseSidebarProps {
   course: ICourse & {
-    chapters: (IChapter & {
-      userProgress: IUserProgress[] | null;
-    })[];
+    chapters: IChapter[];
   };
   progressCount: number;
 }
@@ -29,18 +26,27 @@ export const CourseSidebar = async ({
     return redirect("/");
   }
 
-  // Fetch purchase record for the user and course
   const purchase = await Purchase.findOne({
-    userId: userId,
-    courseId: course._id // Convert course._id to ObjectId
-  }).lean();
+    userId,
+    courseId: course._id,
+  });
 
-  const chapters = await Chapter.find({
-    courseId: course._id, // Filter chapters by courseId
-    isPublished: true, // Optional: Only return published chapters
-  })
-  .populate('userProgress') // Populate userProgress for each chapter
-  .lean();
+  // Fetch chapters and populate them with user progress
+  const chapters = await Chapter.find({ courseId: course._id })
+    .sort({ position: 1 })
+    .lean();
+
+  // Fetch user progress for each chapter
+  const chaptersWithProgress = await Promise.all(chapters.map(async (chapter) => {
+    const progress = await UserProgress.findOne({
+      userId,
+      chapterId: chapter._id
+    });
+    return {
+      ...chapter,
+      isCompleted: progress?.isCompleted || false
+    };
+  }));
 
   return (
     <div className="h-full border-r flex flex-col overflow-y-auto shadow-sm">
@@ -58,16 +64,17 @@ export const CourseSidebar = async ({
         )}
       </div>
       <div className="flex flex-col w-full">
-        {chapters.map((chapter) => (
+        {chaptersWithProgress.map((chapter) => (
           <CourseSidebarItem
-            id={chapter._id.toString()} // Ensure _id is correctly converted to string
+            key={chapter._id.toString()}
+            id={chapter._id.toString()}
             label={chapter.title}
-            isCompleted={!!chapter.userProgress?.[0]?.isCompleted}
-            courseId={course._id as string} // Ensure courseId is treated as a string
+            isCompleted={chapter.isCompleted}
+            courseId={course._id as string}
             isLocked={!chapter.isFree && !purchase}
           />
         ))}
       </div>
     </div>
-  );
-};
+  )
+}
