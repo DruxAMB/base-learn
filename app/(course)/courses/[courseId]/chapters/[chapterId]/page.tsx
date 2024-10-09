@@ -63,9 +63,9 @@ const ChapterIdPage = async ({
           <VideoPlayer
             chapterId={params.chapterId}
             title={chapter.title}
+            videoUrl={chapter.videoUrl!}
             courseId={params.courseId}
             nextChapterId={nextChapter?.id}
-            playbackId={muxData?.playbackId!}
             isLocked={isLocked}
             completeOnEnd={completeOnEnd}
           />
