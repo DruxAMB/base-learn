@@ -4,7 +4,6 @@ import mongoose from "mongoose";
 import { Course } from "@/mongodb/Course";
 import { Attachment } from "@/mongodb/Attachment";
 
-
 export async function POST(
   req: Request,
   { params }: { params: { courseId: string } }
@@ -17,8 +16,9 @@ export async function POST(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
+    // Check if the course exists and is owned by the user
     const courseOwner = await Course.findOne({
-      _id: params.courseId,
+      _id: new mongoose.Types.ObjectId(params.courseId),
       userId: userId,
     });
 
@@ -26,11 +26,18 @@ export async function POST(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
+    // Create the attachment
     const attachment = await Attachment.create({
       url,
-      name: url.split("/").pop(),
-      courseId: params.courseId,
+      name: url.split("/").pop(), // Use the last part of the URL as the name
+      courseId: new mongoose.Types.ObjectId(params.courseId),
     });
+
+    // Update the course to include the new attachment
+    await Course.updateOne(
+      { _id: new mongoose.Types.ObjectId(params.courseId) },
+      { $push: { attachments: attachment._id } } // Add the attachment's ObjectId to the course
+    );
 
     return NextResponse.json(attachment);
   } catch (error) {

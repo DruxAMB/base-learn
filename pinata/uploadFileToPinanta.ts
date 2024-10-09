@@ -9,7 +9,6 @@ export const uploadFileToPinata = async (file: File): Promise<string | null> => 
   // Prepare the form data to send the file to Pinata
   const formData = new FormData();
   formData.append("file", file);
-  console.log(PINATA_API_KEY, PINATA_SECRET_API_KEY)
   try {
     // Send the request to Pinata with the necessary headers
     const response = await axios.post(url, formData, {

@@ -3,7 +3,6 @@ import { redirect } from "next/navigation";
 import { DataTable } from "./_components/data-table";
 import { columns } from "./_components/columns";
 import { Course } from "@/mongodb/Course";
-import { connectToMongoDB } from "@/lib/db";
 import { Chapter } from "@/mongodb/Chapter";
 import { Attachment } from "@/mongodb/Attachment";
 

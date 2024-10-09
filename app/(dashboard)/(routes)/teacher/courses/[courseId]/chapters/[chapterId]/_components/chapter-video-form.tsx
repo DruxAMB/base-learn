@@ -82,7 +82,7 @@ export const ChapterVideoForm = ({
       {isEditing && (
         <div>
           <FileUpload
-            fileTypes={["video"]}
+            fileTypes={["mp4"]}
             onChange={(url) => {
               if (url) {
                 onSubmit({ videoUrl: url });
