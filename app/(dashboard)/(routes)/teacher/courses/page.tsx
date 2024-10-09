@@ -18,7 +18,6 @@ const CoursesPage = async () => {
     id: course._id.toString(),
   }));
 
-  console.log(courses, "CoursesPage")
   return ( 
     <div className="p-6">
       <DataTable columns={columns} data={formattedCourses} />

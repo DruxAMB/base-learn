@@ -4,8 +4,7 @@ import { Schema, model, models, Document, Model } from 'mongoose';
 export interface IStripeCustomer extends Document {
   userId: string;
   stripeCustomerId: string;
-  createdAt: Date;
-  updatedAt: Date;
+
 }
 
 // Define the Mongoose schema with TypeScript support

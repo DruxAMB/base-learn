@@ -9,8 +9,6 @@ export interface IChapter extends Document {
   isPublished: boolean;
   isFree: boolean;
   courseId: Types.ObjectId; // Reference to Course as ObjectId
-  createdAt: Date;
-  updatedAt: Date;
 }
 
 // Define the Mongoose schema with TypeScript support
@@ -23,7 +21,7 @@ const chapterSchema = new Schema<IChapter>({
   isFree: { type: Boolean, default: false },
   courseId: { type: Schema.Types.ObjectId, ref: 'Course', required: true }, // Reference to Course
  
-},  { timestamps: true });
+}, );
 
 // Index on courseId for faster queries
 chapterSchema.index({ courseId: 1 });

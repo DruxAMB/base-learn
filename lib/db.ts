@@ -1,39 +1,48 @@
-
 import mongoose, { Connection } from "mongoose";
+
+// Declaring a global type for mongoose to persist connection cache across hot reloads in development
 declare global {
-  var mongoose: { conn: any; promise: any } | undefined;
-};
-
-const MONGODB_URI = process.env.MONGODB_URI || "";
-
-if (!MONGODB_URI) {
-  throw new Error('Please define the MONGODB_URI environment variable inside .env.local');
+  var mongoose: {
+    conn: Connection | null;
+    promise: Promise<Connection> | null;
+  };
 }
 
+// Check for the MongoDB URI in environment variables
+const MONGODB_URI = process.env.MONGODB_URI || "";
+if (!MONGODB_URI) {
+  throw new Error("Please define the MONGODB_URI environment variable inside .env.local");
+}
 
-// Declaring a variable to store the cached database connection
-let cachedConnection: Connection | null = null;
+// Initialize the global mongoose variable if it doesn't exist (for development caching)
+if (!global.mongoose) {
+  global.mongoose = { conn: null, promise: null };
+}
 
-// Function to establish a connection to MongoDB
 export async function connectToMongoDB() {
   // If a cached connection exists, return it
-  console.log("connecting to db")
-  if (cachedConnection) {
-    console.log("Using cached db connection");
-    return cachedConnection;
+  if (global.mongoose.conn) {
+    console.log("Using cached MongoDB connection");
+    return global.mongoose.conn;
   }
+
+  // If no cached connection exists, create a new one
+  if (!global.mongoose.promise) {
+    console.log("Establishing a new MongoDB connection...");
+    global.mongoose.promise = mongoose
+      .connect(MONGODB_URI)
+      .then((mongooseInstance) => {
+        return mongooseInstance.connection;
+      });
+  }
+
   try {
-    // If no cached connection exists, establish a new connection to MongoDB
-    const cnx = await mongoose.connect(process.env.MONGODB_URI!);
-    // Cache the connection for future use
-    cachedConnection = cnx.connection;
-    // Log message indicating a new MongoDB connection is established
-    console.log("New mongodb connection established");
-    // Return the newly established connection
-    return cachedConnection;
+    // Await the promise and cache the connection
+    global.mongoose.conn = await global.mongoose.promise;
+    console.log("MongoDB connected successfully");
+    return global.mongoose.conn;
   } catch (error) {
-    // If an error occurs during connection, log the error and throw it
-    console.log(error);
+    console.error("MongoDB connection error:", error);
     throw error;
   }
 }

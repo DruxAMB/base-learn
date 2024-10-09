@@ -6,8 +6,7 @@ export interface IUserProgress extends Document {
   userId: string;
   chapterId: Types.ObjectId; // Reference to Chapter as ObjectId
   isCompleted: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+
 }
 
 // Define the Mongoose schema with TypeScript support

@@ -4,8 +4,6 @@ import { Schema, model, models, Document, Model, Types } from 'mongoose';
 export interface IPurchase extends Document {
   userId: string;
   courseId: Types.ObjectId; // Reference to Course as ObjectId
-  createdAt: Date;
-  updatedAt: Date;
 }
 
 // Define the Mongoose schema with TypeScript support

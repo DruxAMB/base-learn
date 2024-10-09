@@ -5,8 +5,7 @@ export interface IAttachment extends Document {
   name: string;
   url: string;
   courseId: Types.ObjectId; // Reference to Course as ObjectId
-  createdAt: Date;
-  updatedAt: Date;
+
 }
 
 // Define the Mongoose schema with TypeScript support
