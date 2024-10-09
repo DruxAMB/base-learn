@@ -13,7 +13,7 @@ import { ChapterAccessForm } from "./_components/chapter-access-form";
 import { ChapterVideoForm } from "./_components/chapter-video-form";
 import { ChapterActions } from "./_components/chapter-actions";
 
-import { Chapter, IChapter } from "@/mongodb/Chapter";
+import { Chapter } from "@/mongodb/Chapter";
 
 const ChapterIdPage = async ({
   params
