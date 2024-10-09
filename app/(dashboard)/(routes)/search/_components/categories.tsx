@@ -12,7 +12,6 @@ import {
 import { IconType } from "react-icons";
 
 import { CategoryItem } from "./category-item";
-import { Category } from "@/mongodb/Category";
 
 interface CategoriesProps {
   items: any[]; // Change this line

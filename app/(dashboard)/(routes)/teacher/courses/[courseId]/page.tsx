@@ -14,8 +14,10 @@ import { PriceForm } from "./_components/price-form";
 import { AttachmentForm } from "./_components/attachment-form";
 import { ChaptersForm } from "./_components/chapters-form";
 import { Actions } from "./_components/actions";
-import { Course } from "@/mongodb/Course";
+import { Course, ICourse } from "@/mongodb/Course";
 import { Category } from "@/mongodb/Category";
+import { IChapter } from "@/mongodb/Chapter";
+import { IAttachment } from "@/mongodb/Attachment"; // Add this import
 
 const CourseIdPage = async ({
   params
@@ -32,9 +34,13 @@ const CourseIdPage = async ({
     _id: new Types.ObjectId(params.courseId),
     userId
   }).populate([
-    { path: 'chapters', options: { sort: { position: 1 } } },
+    { 
+      path: 'chapters', 
+      options: { sort: { position: 1 } },
+      populate: { path: 'muxData' }
+    },
     { path: 'attachments', options: { sort: { createdAt: -1 } } }
-  ]);
+  ]).lean() as ICourse & { chapters: IChapter[]; attachments: IAttachment[] }; // Updated type assertion
 
   const categories = await Category.find().sort({ name: 1 });
 
@@ -48,7 +54,7 @@ const CourseIdPage = async ({
     course.imageUrl,
     course.price,
     course.categoryId,
-    course.chapters.some((chapter: { isPublished: boolean }) => chapter.isPublished),
+    course.chapters?.some((chapter: any) => chapter.isPublished),
   ];
 
   const totalFields = requiredFields.length;
