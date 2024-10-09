@@ -3,7 +3,7 @@ import axios from "axios";
 const PINATA_API_KEY = process.env.VITE_PINATA_API_KEY;
 const PINATA_SECRET_API_KEY = process.env.VITE_PINATA_SECRET_API_KEY;
 
-export const uploadToPinata = async (file: File): Promise<string | null> => {
+export const uploadFileToPinata = async (file: File): Promise<string | null> => {
   const url = `https://api.pinata.cloud/pinning/pinFileToIPFS`;
 
   // Prepare the form data to send the file to Pinata

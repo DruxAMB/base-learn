@@ -1,9 +1,9 @@
 {
-  "name": "druxamb-academy",
+  "name": "baseLearn",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "druxamb": "next dev",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -40,6 +40,8 @@
     "eslint": "8.49.0",
     "eslint-config-next": "13.4.12",
     "lucide-react": "^0.276.0",
+    "mongodb": "^6.9.0",
+    "mongoose": "^8.7.0",
     "next": "13.4.12",
     "postcss": "8.4.29",
     "query-string": "^8.1.0",
