@@ -26,6 +26,7 @@ export const Actions = ({
   const [isLoading, setIsLoading] = useState(false);
   console.log(courseId)
   const onClick = async () => {
+    console.log(courseId)
     try {
       setIsLoading(true);
 
