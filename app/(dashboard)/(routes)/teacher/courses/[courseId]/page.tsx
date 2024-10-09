@@ -36,11 +36,9 @@ const CourseIdPage = async ({
     { 
       path: 'chapters', 
       options: { sort: { position: 1 } },
-      populate: { path: 'muxData' }
     },
     { path: 'attachments', options: { sort: { createdAt: -1 } } }
   ]).lean() as ICourse & { chapters: IChapter[]; attachments: IAttachment[] }; // Updated type assertion
-  console.log(course)
   const categories = await Category.find().sort({ name: 1 });
 
   if (!course) {
@@ -96,19 +94,19 @@ const CourseIdPage = async ({
             </div>
             <TitleForm
               initialData={course}
-              courseId={course.id}
+              courseId={course._id as string}
             />
             <DescriptionForm
               initialData={course}
-              courseId={course.id}
+              courseId={course._id as string}
             />
             <ImageForm
               initialData={course}
-              courseId={course.id}
+              courseId={params.courseId}
             />
             <CategoryForm
               initialData={course}
-              courseId={course.id}
+              courseId={params.courseId}
               options={categories.map((category) => ({
                 label: category.name,
                 value: category.id,
@@ -125,7 +123,7 @@ const CourseIdPage = async ({
               </div>
               <ChaptersForm
                 initialData={course}
-                courseId={course.id}
+                courseId={course._id as string}
               />
             </div>
             <div>
@@ -137,7 +135,7 @@ const CourseIdPage = async ({
               </div>
               <PriceForm
                 initialData={course}
-                courseId={course.id}
+                courseId={course._id as string}
               />
             </div>
             <div>
@@ -149,7 +147,7 @@ const CourseIdPage = async ({
               </div>
               <AttachmentForm
                 initialData={course}
-                courseId={course.id}
+                courseId={course._id as string}
               />
             </div>
           </div>

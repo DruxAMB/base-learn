@@ -85,8 +85,8 @@ export const ImageForm = ({
       {isEditing && (
         <div>
           <FileUpload
-            endpoint="courseImage"
-            onChange={(url) => {
+          fileTypes={["JPG", "PNG", "GIF"]}
+              onChange={(url) => {
               if (url) {
                 onSubmit({ imageUrl: url });
               }

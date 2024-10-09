@@ -1,9 +1,7 @@
 import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
-import mongoose from "mongoose";
 import { Course } from "@/mongodb/Course";
 import { Chapter } from "@/mongodb/Chapter";
-import { MuxData } from "@/mongodb/MuxData";
 
 
 
@@ -32,11 +30,8 @@ export async function PATCH(
       courseId: params.courseId,
     });
 
-    const muxData = await MuxData.findOne({
-      chapterId: params.chapterId,
-    });
 
-    if (!chapter || !muxData || !chapter.title || !chapter.description || !chapter.videoUrl) {
+    if (!chapter  || !chapter.title || !chapter.description || !chapter.videoUrl) {
       return new NextResponse("Missing required fields", { status: 400 });
     }
 

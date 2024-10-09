@@ -2,8 +2,8 @@ import { auth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Eye, LayoutDashboard, Video } from "lucide-react";
+import { Types } from 'mongoose';
 
-import { db } from "@/lib/db";
 import { IconBadge } from "@/components/icon-badge";
 import { Banner } from "@/components/banner";
 
@@ -12,6 +12,8 @@ import { ChapterDescriptionForm } from "./_components/chapter-description-form";
 import { ChapterAccessForm } from "./_components/chapter-access-form";
 import { ChapterVideoForm } from "./_components/chapter-video-form";
 import { ChapterActions } from "./_components/chapter-actions";
+
+import { Chapter, IChapter } from "@/mongodb/Chapter";
 
 const ChapterIdPage = async ({
   params
@@ -24,16 +26,10 @@ const ChapterIdPage = async ({
     return redirect("/");
   }
 
-  const chapter = await db.chapter.findUnique({
-    where: {
-      id: params.chapterId,
-      courseId: params.courseId
-    },
-    include: {
-      muxData: true,
-    },
-  });
-
+  const chapter = await Chapter.findOne({
+    _id: new Types.ObjectId(params.chapterId),
+    courseId: new Types.ObjectId(params.courseId)
+  }).lean() 
   if (!chapter) {
     return redirect("/")
   }

@@ -1,16 +1,8 @@
-import Mux from "@mux/mux-node";
 import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
-import mongoose from "mongoose";
 import { Course } from "@/mongodb/Course";
 import { Chapter } from "@/mongodb/Chapter";
-import { MuxData } from "@/mongodb/MuxData";
 
-
-const { Video } = new Mux(
-  process.env.MUX_TOKEN_ID!,
-  process.env.MUX_TOKEN_SECRET!,
-);
 
 export async function DELETE(
   req: Request,
@@ -41,16 +33,7 @@ export async function DELETE(
       return new NextResponse("Not Found", { status: 404 });
     }
 
-    if (chapter.videoUrl) {
-      const existingMuxData = await MuxData.findOne({
-        chapterId: params.chapterId,
-      });
-
-      if (existingMuxData) {
-        await Video.Assets.del(existingMuxData.assetId);
-        await MuxData.findByIdAndDelete(existingMuxData._id);
-      }
-    }
+    
 
     const deletedChapter = await Chapter.findByIdAndDelete(params.chapterId);
 
@@ -103,29 +86,6 @@ export async function PATCH(
       },
       { new: true }
     );
-
-    if (values.videoUrl) {
-      const existingMuxData = await MuxData.findOne({
-        chapterId: params.chapterId,
-      });
-
-      if (existingMuxData) {
-        await Video.Assets.del(existingMuxData.assetId);
-        await MuxData.findByIdAndDelete(existingMuxData._id);
-      }
-
-      const asset = await Video.Assets.create({
-        input: values.videoUrl,
-        playback_policy: "public",
-        test: false,
-      });
-
-      await MuxData.create({
-        chapterId: params.chapterId,
-        assetId: asset.id,
-        playbackId: asset.playback_ids?.[0]?.id,
-      });
-    }
 
     return NextResponse.json(chapter);
   } catch (error) {
