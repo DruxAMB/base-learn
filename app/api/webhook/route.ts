@@ -3,7 +3,8 @@ import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
 import { stripe } from "@/lib/stripe";
-import { db } from "@/lib/db";
+import { Purchase } from "@/mongodb/Purchase"; // Import the Purchase model
+import { connectToMongoDB } from "@/lib/db";
 
 export async function POST(req: Request) {
   const body = await req.text();
@@ -30,12 +31,16 @@ export async function POST(req: Request) {
       return new NextResponse(`Webhook Error: Missing metadata`, { status: 400 });
     }
 
-    await db.purchase.create({
-      data: {
-        courseId: courseId,
+    try {
+      await connectToMongoDB(); // Connect to MongoDB
+      await Purchase.create({
         userId: userId,
-      }
-    });
+        courseId: courseId,
+      });
+    } catch (error: any) {
+      console.error("Error creating purchase:", error);
+      return new NextResponse(`Error creating purchase: ${error.message}`, { status: 500 });
+    }
   } else {
     return new NextResponse(`Webhook Error: Unhandled event type ${event.type}`, { status: 200 })
   }

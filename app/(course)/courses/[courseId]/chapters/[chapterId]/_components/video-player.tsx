@@ -9,9 +9,10 @@ import { Loader2, Lock } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { useConfettiStore } from "@/hooks/use-confetti-store";
+import { ICourse } from "@/mongodb/Course";
 
 interface VideoPlayerProps {
-  playbackId: string;
+  videoUrl: string;
   courseId: string;
   chapterId: string;
   nextChapterId?: string;
@@ -21,7 +22,7 @@ interface VideoPlayerProps {
 };
 
 export const VideoPlayer = ({
-  playbackId,
+  videoUrl,
   courseId,
   chapterId,
   nextChapterId,
@@ -80,7 +81,7 @@ export const VideoPlayer = ({
           onCanPlay={() => setIsReady(true)}
           onEnded={onEnd}
           autoPlay
-          playbackId={playbackId}
+          playbackId={videoUrl}
         />
       )}
     </div>
