@@ -5,6 +5,7 @@ import { CoursesList } from "@/components/courses-list";
 import { getCourses as getCoursesFromMongodb } from "@/actions/get-courses-mongodb";
 import { Category } from "@/mongodb/Category";
 import { Categories } from "./_components/categories";
+import { connectToMongoDB } from "@/lib/db";
 
 interface SearchPageProps {
   searchParams: {
@@ -20,7 +21,9 @@ const SearchPage = async ({
 
   if (!userId) {
     return redirect("/");
+
   }
+  await connectToMongoDB()
 
  
   const categories = await Category.find({})
@@ -32,7 +35,7 @@ const SearchPage = async ({
     userId,
     ...searchParams,
   })
-  console.log(courses)
+  console.log(courses, userId)
   return (
     <>
       <div className="px-6 pt-6 md:hidden md:mb-0 block">

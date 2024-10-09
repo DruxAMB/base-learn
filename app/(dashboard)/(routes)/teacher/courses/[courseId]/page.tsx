@@ -29,7 +29,6 @@ const CourseIdPage = async ({
   if (!userId) {
     return redirect("/");
   }
-
   const course = await Course.findOne({
     _id: new Types.ObjectId(params.courseId),
     userId
@@ -41,7 +40,7 @@ const CourseIdPage = async ({
     },
     { path: 'attachments', options: { sort: { createdAt: -1 } } }
   ]).lean() as ICourse & { chapters: IChapter[]; attachments: IAttachment[] }; // Updated type assertion
-
+  console.log(course)
   const categories = await Category.find().sort({ name: 1 });
 
   if (!course) {
