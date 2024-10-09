@@ -1,11 +1,9 @@
 import { auth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
-
-import { db } from "@/lib/db";
 import { SearchInput } from "@/components/search-input";
-import { getCourses } from "@/actions/get-courses";
 import { CoursesList } from "@/components/courses-list";
-
+import { getCourses as getCoursesFromMongodb } from "@/actions/get-courses-mongodb";
+import { Category } from "@/mongodb/Category";
 import { Categories } from "./_components/categories";
 
 interface SearchPageProps {
@@ -24,17 +22,17 @@ const SearchPage = async ({
     return redirect("/");
   }
 
-  const categories = await db.category.findMany({
-    orderBy: {
-      name: "asc"
-    }
-  });
+ 
+  const categories = await Category.find({})
+  .sort({ name: 1 }) // Sort in ascending order (1 for ascending, -1 for descending)
+  .lean(); 
 
-  const courses = await getCourses({
+
+  const courses: any = await getCoursesFromMongodb({
     userId,
     ...searchParams,
-  });
-
+  })
+  console.log(courses)
   return (
     <>
       <div className="px-6 pt-6 md:hidden md:mb-0 block">
@@ -42,7 +40,7 @@ const SearchPage = async ({
       </div>
       <div className="p-6 space-y-4">
         <Categories
-          items={categories}
+          items={categories as any[]} // Type assertion as a temporary fix
         />
         <CoursesList items={courses} />
       </div>
