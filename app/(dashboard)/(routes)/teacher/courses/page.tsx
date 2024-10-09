@@ -3,6 +3,9 @@ import { redirect } from "next/navigation";
 import { DataTable } from "./_components/data-table";
 import { columns } from "./_components/columns";
 import { Course } from "@/mongodb/Course";
+import { connectToMongoDB } from "@/lib/db";
+import { Chapter } from "@/mongodb/Chapter";
+import { Attachment } from "@/mongodb/Attachment";
 
 const CoursesPage = async () => {
   const { userId } = auth();
@@ -12,6 +15,8 @@ const CoursesPage = async () => {
   }
 
   const courses = await Course.find({ userId }).sort({ createdAt: -1 }).lean();
+   await Chapter.find({ userId }).sort({ createdAt: -1 }).lean();
+   await Attachment.find({ userId }).sort({ createdAt: -1 }).lean();
 
   const formattedCourses = courses.map(course => ({
     ...course,

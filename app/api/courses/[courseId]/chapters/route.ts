@@ -41,6 +41,12 @@ export async function POST(
       position: newPosition,
     });
 
+    // Add the new chapter's ObjectId to the course's chapters array
+    await Course.updateOne(
+      { _id: new mongoose.Types.ObjectId(params.courseId) },
+      { $push: { chapters: chapter._id } } // Push the new chapter's ObjectId
+    );
+
     return NextResponse.json(chapter);
   } catch (error) {
     console.log("[CHAPTERS]", error);
