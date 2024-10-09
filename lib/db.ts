@@ -1,24 +1,14 @@
-import { PrismaClient } from "@prisma/client";
 
+import mongoose, { Connection } from "mongoose";
 declare global {
-  var prisma: PrismaClient | undefined;
   var mongoose: { conn: any; promise: any } | undefined;
 };
 
-export const db = globalThis.prisma || new PrismaClient();
-
-if (process.env.NODE_ENV !== "production") globalThis.prisma = db;
-
-// Importing mongoose library along with Connection type from it
-import mongoose, { Connection } from "mongoose";
 const MONGODB_URI = process.env.MONGODB_URI || "";
 
 if (!MONGODB_URI) {
   throw new Error('Please define the MONGODB_URI environment variable inside .env.local');
 }
-
-let cached = global.mongoose || { conn: null, promise: null };
-
 
 
 // Declaring a variable to store the cached database connection
