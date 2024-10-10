@@ -1,4 +1,4 @@
-# Build DruxAMB Academy LMS Platform: Next.js 13,  React, Onchainkit, Smart Wallet, Paymaster, Tailwind, Mongodb
+# learnOnchain (LMS Platform): Next.js 13,  React, Onchainkit, Smart Wallet, Paymaster, Tailwind, Mongodb
 
 Key Features:
 
