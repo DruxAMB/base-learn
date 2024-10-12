@@ -4,7 +4,7 @@ import React from "react";
 export default function WelcomeBanner() {
   return (
     <div className="flex gap-5 items-center bg-white rounded-xl p-5">
-      <Image src="/octocat.png" alt="banner" width={100} height={100} />
+      <Image src="/onchainLearn-logo.png" alt="banner" width={100} height={100} />
       <div>
         <h2 className="font-bold text-[27px]">
           Welcome to <span className=" text-blue-600">learnOnchain</span>
