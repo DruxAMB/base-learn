@@ -24,10 +24,7 @@ const CourseLayout = async ({
     .populate({
       path: 'chapters',
       match: { isPublished: true },
-      populate: {
-        path: 'userProgress',
-        match: { userId }
-      },
+     
       options: { sort: { position: 1 } }
     })
     .lean() as any; // Add type assertion here
