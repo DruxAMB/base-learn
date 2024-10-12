@@ -1,6 +1,5 @@
-import { Course } from "@/mongodb/Course"; // Mongoose Course model
-import {  ICategory } from "@/mongodb/Category"; // Mongoose Category model
 import { getProgress } from "@/actions/get-progress";
+import { Course } from "@/mongodb/Course";
 
 type CourseWithProgressWithCategory = {
   id: string;
@@ -9,7 +8,7 @@ type CourseWithProgressWithCategory = {
   imageUrl?: string;
   price?: number;
   isPublished: boolean;
-  category: ICategory | null;
+  category: { id: string; name: string } | null;
   chapters: { id: string }[];
   progress: number | null;
 };
@@ -20,25 +19,21 @@ type GetCourses = {
   categoryId?: string;
 };
 
+
+
 export const getCourses = async ({
   userId,
   title,
-  categoryId
+  categoryId,
 }: GetCourses): Promise<CourseWithProgressWithCategory[]> => {
   try {
-    // Build query object for filtering courses
-    const query: any = {
+    // Query courses from MongoDB
+    const courses = await Course.find({
       isPublished: true,
-      ...(title ? { title: { $regex: title, $options: "i" } } : {}), // If title is provided, filter by partial match
+      ...(title ? { title: { $regex: title, $options: "i" } } : {}),
       ...(categoryId ? { categoryId } : {}),
-    };
-
-    // Fetch courses with Mongoose and populate related data
-    const courses = await Course.find(query)
-      .populate({
-        path: 'categoryId', // Populate category data
-        select: 'name', // Only select the category name
-      })
+    })
+      .populate('categoryId', 'name') // Populate category by categoryId
       .populate({
         path: 'chapters',
         match: { isPublished: true }, // Only include published chapters
@@ -46,27 +41,29 @@ export const getCourses = async ({
       })
       .populate({
         path: 'purchases',
-        match: { userId }, // Filter purchases by userId
+        match: { userId }, // Only include purchases by the current user
       })
-      .sort({ createdAt: -1 }) // Sort courses by creation date in descending order
-      .lean(); // Use lean() to improve performance (returns plain JS objects)
+      .sort({ createdAt: -1 }) // Sort by creation date, descending
+      .lean(); // Use lean() for performance as we don’t need the Mongoose document
 
     // Calculate progress for each course
     const coursesWithProgress: CourseWithProgressWithCategory[] = await Promise.all(
       courses.map(async (course: any) => {
-        const progress = course.purchases && course.purchases.length > 0
-          ? await getProgress(userId, course._id.toString())
-          : null;
+        const progress = (!course.purchases || course.purchases.length === 0)
+          ? null
+          : await getProgress(userId, course._id);
 
         return {
-          id: course._id.toString(),
+          id: course._id,
           title: course.title,
           description: course.description,
           imageUrl: course.imageUrl,
           price: course.price,
           isPublished: course.isPublished,
-          category: course.categoryId ? course.categoryId : null,
-          chapters: course.chapters.map((chapter: any) => ({ id: chapter._id.toString() })),
+          category: course.categoryId && typeof course.categoryId === 'object' && 'name' in course.categoryId
+            ? { id: (course.categoryId as any)._id, name: (course.categoryId as any).name }
+            : null,
+          chapters: course.chapters.map((chapter: { _id: string }) => ({ id: chapter._id })),
           progress,
         };
       })

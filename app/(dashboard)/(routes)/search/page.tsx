@@ -2,7 +2,7 @@ import { auth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 import { SearchInput } from "@/components/search-input";
 import { CoursesList } from "@/components/courses-list";
-import { getCourses as getCoursesFromMongodb } from "@/actions/get-courses-mongodb";
+import { getCourses  } from "@/actions/get-courses";
 import { Category } from "@/mongodb/Category";
 import { Categories } from "./_components/categories";
 import { connectToMongoDB } from "@/lib/db";
@@ -31,11 +31,10 @@ const SearchPage = async ({
   .lean(); 
 
 
-  const courses: any = await getCoursesFromMongodb({
+  const courses: any = await getCourses({
     userId,
     ...searchParams,
   })
-  console.log(courses, userId)
   return (
     <>
       <div className="px-6 pt-6 md:hidden md:mb-0 block">

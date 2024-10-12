@@ -30,6 +30,7 @@ const ChapterIdPage = async ({
     _id: new Types.ObjectId(params.chapterId),
     courseId: new Types.ObjectId(params.courseId)
   }).lean() 
+  console.log(chapter)
   if (!chapter) {
     return redirect("/")
   }
