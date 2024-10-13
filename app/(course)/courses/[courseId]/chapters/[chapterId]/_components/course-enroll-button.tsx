@@ -1,11 +1,12 @@
 "use client";
 
-import axios from "axios";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
 import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/lib/format";
+import { purchaseCourse } from "@/actions/purchaseCourse";
+import { useAuth } from "@clerk/nextjs";
 
 interface CourseEnrollButtonProps {
   price: number;
@@ -17,14 +18,13 @@ export const CourseEnrollButton = ({
   courseId,
 }: CourseEnrollButtonProps) => {
   const [isLoading, setIsLoading] = useState(false);
-
+  const { userId} = useAuth()
   const onClick = async () => {
     try {
       setIsLoading(true);
 
-      const response = await axios.post(`/api/courses/${courseId}/checkout`)
-
-      window.location.assign(response.data.url);
+      console.log("clicked");
+      // await purchaseCourse(courseId, userId!);
     } catch {
       toast.error("Something went wrong");
     } finally {

@@ -86,6 +86,13 @@ const ChapterIdPage = async ({
                 price={course.price!}
               />
             )}
+            {
+              userProgress?.isCompleted && (
+                <button className="bg-sky-200 text-sky-700 px-4 py-2 rounded-md">
+                  Mint Certificate
+                </button>
+              )
+            }
           </div>
           <Separator />
           <div>
