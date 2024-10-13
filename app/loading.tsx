@@ -4,7 +4,7 @@ import React from "react";
 const Loading = () => {
   return (
     <div>
-      <LoaderIcon className="text-blue-600 animate-spin m-auto" />
+      <LoaderIcon className="text-blue-600 h-screen animate-spin m-auto" />
     </div>
   );
 };
