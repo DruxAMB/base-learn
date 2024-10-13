@@ -35,6 +35,9 @@ export const VideoPlayer = ({
   const router = useRouter();
   const confetti = useConfettiStore();
 
+  const ipfsUrl = `https://ipfs.io/ipfs/${videoUrl.split('ipfs/')[1]}`
+  console.log(ipfsUrl);
+  
 
   const onEnd = async () => {
     try {
@@ -76,16 +79,19 @@ export const VideoPlayer = ({
         </div>
       )}
       {!isLocked && (
-        <Player
-          url={"https://www.youtube.com/live/95RXd8RSZr0?si=HpeD97a3t0Q_Jg7o"} // kcpele replace with videoUrl
-          className={cn(!isReady && "hidden")}
-          onReady={() => setIsReady(true)}
-          onEnded={onEnd}
-          controls={true}
-          width="100%"
-          height="100%"
-          autoPlay
-        />
+        <video
+        width="100%"
+        height="100%"
+        title={title}
+        controls
+        autoPlay
+        className={isReady ? '' : 'hidden'}
+        onCanPlay={() => setIsReady(true)} // Equivalent to onReady
+        onEnded={onEnd}
+      >
+        <source src={ipfsUrl} type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
       )}
     </div>
   );
