@@ -6,7 +6,6 @@ import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/lib/format";
 import { purchaseCourse } from "@/actions/purchaseCourse";
-import { useAuth } from "@clerk/nextjs";
 
 interface CourseEnrollButtonProps {
   price: number;
@@ -18,19 +17,19 @@ export const CourseEnrollButton = ({
   courseId,
 }: CourseEnrollButtonProps) => {
   const [isLoading, setIsLoading] = useState(false);
-  const { userId} = useAuth()
   const onClick = async () => {
     try {
       setIsLoading(true);
-
-      console.log("clicked");
-      // await purchaseCourse(courseId, userId!);
-    } catch {
-      toast.error("Something went wrong");
+      await purchaseCourse(courseId);
+      toast.success("Course purchased successfully");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Something went wrong"
+      );
     } finally {
       setIsLoading(false);
     }
-  }
+  };
 
   return (
     <Button
@@ -39,7 +38,8 @@ export const CourseEnrollButton = ({
       size="sm"
       className="w-full md:w-auto"
     >
-      Enroll for {formatPrice(price)}
+      {/* Enroll for {formatPrice(price)} */}
+      {isLoading ? "Loading..." : "Click to puchase for free"}
     </Button>
-  )
-}
+  );
+};

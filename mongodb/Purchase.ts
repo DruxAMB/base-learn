@@ -1,4 +1,4 @@
-import { Schema, model, models, Document, Model, Types } from 'mongoose';
+import { Schema, model, models, Document, Model, Types } from "mongoose";
 
 // Define the interface for the Purchase document
 export interface IPurchase extends Document {
@@ -7,14 +7,17 @@ export interface IPurchase extends Document {
 }
 
 // Define the Mongoose schema with TypeScript support
-const purchaseSchema = new Schema<IPurchase>({
-  userId: { type: String, required: true },
-  courseId: { type: Schema.Types.ObjectId, ref: 'Course', required: true }, // Reference to Course
-  
-},  { timestamps: true });
+const purchaseSchema = new Schema<IPurchase>(
+  {
+    userId: { type: String, required: true },
+    courseId: { type: Schema.Types.ObjectId, ref: "Course", required: true }, // Reference to Course
+  },
+  { timestamps: true }
+);
 
 // Unique index on userId and courseId to prevent duplicate purchases
 purchaseSchema.index({ userId: 1, courseId: 1 }, { unique: true });
 
-// Define and export the Purchase model with the interface
-export const Purchase: Model<IPurchase> = models.Purchase || model<IPurchase>('Purchase', purchaseSchema);
+// Check if the model already exists to prevent redefining it
+export const Purchase: Model<IPurchase> =
+  models.Purchase || model<IPurchase>("Purchase", purchaseSchema);

@@ -1,27 +1,24 @@
-import { Purchase, IPurchase } from '../mongodb/Purchase';
-import { Course, ICourse } from '../mongodb/Course';
-import { Types } from 'mongoose';
+import { IPurchase } from "@/mongodb/Purchase";
+import axios from "axios";
 
-export async function purchaseCourse(courseId: string, userId: string): Promise<IPurchase> {
+export async function purchaseCourse(courseId: string): Promise<IPurchase> {
   try {
-    // Create a new purchase
-    const purchase = await Purchase.create({
-      userId,
-      courseId: new Types.ObjectId(courseId),
-    });
-
-    // Update the course with the new purchase ID
-    await Course.findByIdAndUpdate(courseId, {
-      $push: { purchases: purchase._id },
-    });
-
-    return purchase;
+    const response = await axios.post<IPurchase>(
+      `/api/courses/${courseId}/purchase`
+    );
+    return response.data;
   } catch (error) {
-    // Check if the error is due to a duplicate purchase
-    if (error instanceof Error && 'code' in error && error.code === 11000) {
-      throw new Error('User has already purchased this course');
+    if (axios.isAxiosError(error) && error.response) {
+      if (
+        error.response.status === 400 &&
+        error.response.data === "Already purchased"
+      ) {
+        throw new Error("You have already purchased this course");
+      }
+      throw new Error(
+        error.response.data || "An error occurred while purchasing the course"
+      );
     }
-    // Re-throw other errors
     throw error;
   }
 }

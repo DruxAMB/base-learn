@@ -2,39 +2,41 @@ import { auth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 import { SearchInput } from "@/components/search-input";
 import { CoursesList } from "@/components/courses-list";
-import { getCourses  } from "@/actions/get-courses";
+import { getCourses } from "@/actions/get-courses";
 import { Category } from "@/mongodb/Category";
 import { Categories } from "./_components/categories";
 import { connectToMongoDB } from "@/lib/db";
+import { Chapter } from "@/mongodb/Chapter";
+import { Attachment } from "@/mongodb/Attachment";
+import { UserProgress } from "@/mongodb/UserProgress";
+import { Purchase } from "@/mongodb/Purchase";
 
 interface SearchPageProps {
   searchParams: {
     title: string;
     categoryId: string;
-  }
-};
+  };
+}
 
-const SearchPage = async ({
-  searchParams
-}: SearchPageProps) => {
+const SearchPage = async ({ searchParams }: SearchPageProps) => {
   const { userId } = auth();
 
   if (!userId) {
     return redirect("/");
-
   }
-  await connectToMongoDB()
 
- 
   const categories = await Category.find({})
-  .sort({ name: 1 }) // Sort in ascending order (1 for ascending, -1 for descending)
-  .lean(); 
-
+    .sort({ name: 1 }) // Sort in ascending order (1 for ascending, -1 for descending)
+    .lean();
 
   const courses: any = await getCourses({
     userId,
     ...searchParams,
-  })
+  });
+  await Chapter.find({ userId }).sort({ createdAt: -1 }).lean();
+  await Attachment.find({ userId }).sort({ createdAt: -1 }).lean();
+  await UserProgress.find({ userId }).sort({ createdAt: -1 }).lean();
+  await Purchase.find({ userId }).sort({ createdAt: -1 }).lean();
   return (
     <>
       <div className="px-6 pt-6 md:hidden md:mb-0 block">
@@ -47,7 +49,7 @@ const SearchPage = async ({
         <CoursesList items={courses} />
       </div>
     </>
-   );
-}
- 
+  );
+};
+
 export default SearchPage;
