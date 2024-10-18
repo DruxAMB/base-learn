@@ -8,6 +8,8 @@ import { ToastProvider } from "@/components/providers/toaster-provider";
 import { ConfettiProvider } from "@/components/providers/confetti-provider";
 import OnchainProvider from "@/providers/OnchainKitProvider";
 import { connectToMongoDB } from "@/lib/db";
+import { Toaster } from "react-hot-toast";
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -28,6 +30,7 @@ export default function RootLayout({
             <ConfettiProvider />
             <ToastProvider />
             {children}
+            <Toaster />
           </body>
         </html>
       </OnchainProvider>

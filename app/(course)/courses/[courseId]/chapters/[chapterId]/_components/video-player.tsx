@@ -1,16 +1,13 @@
 "use client";
 
 import axios from "axios";
-import MuxPlayer from "@mux/mux-player-react";
-import Player from "react-player";
+import ReactPlayer from "react-player";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { Loader2, Lock } from "lucide-react";
 
-import { cn } from "@/lib/utils";
 import { useConfettiStore } from "@/hooks/use-confetti-store";
-import { ICourse } from "@/mongodb/Course";
 
 interface VideoPlayerProps {
   videoUrl: string;
@@ -35,9 +32,7 @@ export const VideoPlayer = ({
   const router = useRouter();
   const confetti = useConfettiStore();
 
-  const ipfsUrl = `https://ipfs.io/ipfs/${videoUrl.split('ipfs/')[1]}`
-  console.log(ipfsUrl);
-  
+  const ipfsUrl = `https://ipfs.io/ipfs/${videoUrl.split("ipfs/")[1]}`;
 
   const onEnd = async () => {
     try {
@@ -79,19 +74,22 @@ export const VideoPlayer = ({
         </div>
       )}
       {!isLocked && (
-        <video
-        width="100%"
-        height="100%"
-        title={title}
-        controls
-        autoPlay
-        className={isReady ? '' : 'hidden'}
-        onCanPlay={() => setIsReady(true)} // Equivalent to onReady
-        onEnded={onEnd}
-      >
-        <source src={ipfsUrl} type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
+        <ReactPlayer
+          url={ipfsUrl}
+          width="100%"
+          height="100%"
+          controls
+          playing={isReady}
+          onReady={() => setIsReady(true)}
+          onEnded={onEnd}
+          config={{
+            file: {
+              attributes: {
+                controlsList: "nodownload",
+              },
+            },
+          }}
+        />
       )}
     </div>
   );
