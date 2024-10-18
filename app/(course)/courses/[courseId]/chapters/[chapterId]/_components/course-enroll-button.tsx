@@ -39,7 +39,7 @@ export const CourseEnrollButton = ({
       className="w-full md:w-auto"
     >
       {/* Enroll for {formatPrice(price)} */}
-      {isLoading ? "Loading..." : "Click to puchase for free"}
+      {isLoading ? "Loading..." : "Enroll"}
     </Button>
   );
 };
