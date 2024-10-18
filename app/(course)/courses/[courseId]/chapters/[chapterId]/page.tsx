@@ -10,6 +10,7 @@ import { Preview } from "@/components/preview";
 import { VideoPlayer } from "./_components/video-player";
 import { CourseEnrollButton } from "./_components/course-enroll-button";
 import { CourseProgressButton } from "./_components/course-progress-button";
+import MintButton from "./_components/MintButton";
 
 const ChapterIdPage = async ({
   params,
@@ -74,11 +75,7 @@ const ChapterIdPage = async ({
                 price={course.price!}
               />
             )}
-            {userProgress?.isCompleted && (
-              <button className="bg-sky-200 text-sky-700 px-4 py-2 rounded-md">
-                Mint Certificate
-              </button>
-            )}
+            {userProgress?.isCompleted && <MintButton />}
           </div>
           <Separator />
           <div>
