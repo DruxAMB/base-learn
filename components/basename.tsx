@@ -24,7 +24,7 @@ export default function Basename() {
               className="bg-transparent"
             >
               <Name className="text-black">
-                <Badge className="badge" />{" "}
+                <Badge className="badge" />
                 {/* Displaying badge alongside the name */}
               </Name>
             </Identity>
