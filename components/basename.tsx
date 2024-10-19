@@ -23,7 +23,7 @@ export default function Basename() {
               chain={base as any}
             >
               <Name className="text-black">
-                <Badge className="badge" />{" "}
+                <Badge className="badge" />
                 {/* Displaying badge alongside the name */}
               </Name>
             </Identity>
