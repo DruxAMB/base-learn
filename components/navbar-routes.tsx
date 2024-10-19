@@ -1,14 +1,15 @@
 "use client";
 
-import { UserButton, useAuth } from "@clerk/nextjs";
+import { ClerkLoaded, ClerkLoading, UserButton, useAuth } from "@clerk/nextjs";
 import { usePathname } from "next/navigation";
-import { LogOut } from "lucide-react";
+import { Loader2, LogOut } from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { isTeacher } from "@/lib/teacher";
 
 import { SearchInput } from "./search-input";
+import Basename from "./basename";
 
 export const NavbarRoutes = () => {
   const { userId } = useAuth();
@@ -40,9 +41,15 @@ export const NavbarRoutes = () => {
             </Button>
           </Link>
         ) : null}
-        <UserButton
-          afterSignOutUrl="/"
-        />
+        <div className="flex gap2">
+            {/* <Basename />  */}
+            <ClerkLoaded>
+              <UserButton afterSignOutUrl="/" />
+            </ClerkLoaded>
+            <ClerkLoading>
+              <Loader2 className="size-8 animate-spin text-slate-800" />
+            </ClerkLoading>
+          </div>
       </div>
     </>
   )
