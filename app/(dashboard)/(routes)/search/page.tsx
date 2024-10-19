@@ -1,4 +1,4 @@
-import { auth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { SearchInput } from "@/components/search-input";
 import { CoursesList } from "@/components/courses-list";
