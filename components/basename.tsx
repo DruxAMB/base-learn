@@ -9,7 +9,7 @@ export default function Basename() {
     <>
       <main className="me-2">
         <p>
-          {primaryWeb3Wallet ? primaryWeb3Wallet.web3Wallet : ""}
+          {primaryWeb3Wallet ? primaryWeb3Wallet.web3Wallet : "basename"}
         </p>
       </main>
     </>
