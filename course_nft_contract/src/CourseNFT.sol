@@ -22,12 +22,12 @@ contract CourseNFT is ERC721, Ownable {
         _;
     }
 
-    constructor() ERC721("CourseNFT", "CNFT") Ownable(msg.sender) {
+    constructor() ERC721("BaseLearn", "BL") Ownable(msg.sender) {
         // Initialize the _currentTokenId to 0
         _currentTokenId = 0;
     }
 
-    function mintCourseNFT(
+    function mint(
         address student,
         uint256 courseId,
         string memory courseUrl
