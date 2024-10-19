@@ -4,7 +4,7 @@ import {
   initalizeContracts,
   client,
 } from "@/lib/initalizeContracts";
-import { auth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 import { Course } from "@/mongodb/Course";
 
 export async function GET(

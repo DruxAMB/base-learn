@@ -1,4 +1,4 @@
-import { auth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { Course } from "@/mongodb/Course"; // Mongoose Course model
 import { Chapter } from "@/mongodb/Chapter"; // Mongoose Chapter model
