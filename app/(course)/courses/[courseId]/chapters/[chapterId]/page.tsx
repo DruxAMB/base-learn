@@ -75,7 +75,12 @@ const ChapterIdPage = async ({
                 price={course.price!}
               />
             )}
-            {userProgress?.isCompleted && <MintButton />}
+            {userProgress?.isCompleted && (
+              <MintButton
+                courseId={params.courseId}
+                videoNftUrl={chapter.videoUrl!}
+              />
+            )}
           </div>
           <Separator />
           <div>

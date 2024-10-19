@@ -17,10 +17,10 @@ contract CourseNFTTest is Test {
     function testMintCourseNFT() public {
         uint256 courseId = 1;
         string memory courseUrl = "https://example.com/course/1";
-        
+
         vm.prank(owner);
-        uint256 tokenId = courseNFT.mintCourseNFT(student, courseId, courseUrl);
-        
+        uint256 tokenId = courseNFT.mint(student, courseId, courseUrl);
+
         assertEq(courseNFT.ownerOf(tokenId), student);
         assertEq(courseNFT.getCourseId(tokenId), courseId);
         assertEq(courseNFT.getCourseUrl(tokenId), courseUrl);
@@ -29,25 +29,25 @@ contract CourseNFTTest is Test {
     function testGetCourseId() public {
         uint256 courseId = 1;
         string memory courseUrl = "https://example.com/course/1";
-        
+
         vm.prank(owner);
-        uint256 tokenId = courseNFT.mintCourseNFT(student, courseId, courseUrl);
-        
+        uint256 tokenId = courseNFT.mint(student, courseId, courseUrl);
+
         assertEq(courseNFT.getCourseId(tokenId), courseId);
     }
 
     function testGetCourseUrl() public {
         uint256 courseId = 1;
         string memory courseUrl = "https://example.com/course/1";
-        
+
         vm.prank(owner);
-        uint256 tokenId = courseNFT.mintCourseNFT(student, courseId, courseUrl);
-        
+        uint256 tokenId = courseNFT.mint(student, courseId, courseUrl);
+
         assertEq(courseNFT.getCourseUrl(tokenId), courseUrl);
     }
 
     function testFailMintAsNonOwner() public {
         vm.prank(student);
-        courseNFT.mintCourseNFT(student, 1, "https://example.com/course/1");
+        courseNFT.mint(student, 1, "https://example.com/course/1");
     }
 }
