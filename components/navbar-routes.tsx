@@ -42,7 +42,7 @@ export const NavbarRoutes = () => {
           </Link>
         ) : null}
         <div className="flex gap2">
-            {/* <Basename />  */}
+            <Basename /> 
             <ClerkLoaded>
               <UserButton />
             </ClerkLoaded>
