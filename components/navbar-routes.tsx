@@ -44,7 +44,7 @@ export const NavbarRoutes = () => {
         <div className="flex gap2">
             {/* <Basename />  */}
             <ClerkLoaded>
-              <UserButton afterSignOutUrl="/" />
+              <UserButton />
             </ClerkLoaded>
             <ClerkLoading>
               <Loader2 className="size-8 animate-spin text-slate-800" />
