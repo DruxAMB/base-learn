@@ -1,7 +1,6 @@
 import { useUser } from "@clerk/nextjs";
 import { Badge, Name, Identity } from "@coinbase/onchainkit/identity";
 import { base } from "viem/chains";
-
 export default function Basename() {
   const { user } = useUser();
 
@@ -12,7 +11,7 @@ export default function Basename() {
   function isValidAddress(addr: string | undefined): addr is `0x${string}` {
     return typeof addr === "string" && addr.startsWith("0x");
   }
-
+  console.log(address);
   return (
     <>
       <main className="m-auto">
