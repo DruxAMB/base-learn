@@ -1,7 +1,6 @@
-import { Purchase } from "@/mongodb/Purchase";
-import { ICourse } from "@/mongodb/Course";
-import {  IChapter } from "@/mongodb/Chapter";
-
+import { Purchase, IPurchase } from "@/mongodb/Purchase";
+import { Course, ICourse } from "@/mongodb/Course";
+import { IChapter } from "@/mongodb/Chapter";
 import { getProgress } from "@/actions/get-progress";
 import { ICategory } from "@/mongodb/Category";
 
@@ -14,39 +13,53 @@ type CourseWithProgressWithCategory = ICourse & {
 type DashboardCourses = {
   completedCourses: CourseWithProgressWithCategory[];
   coursesInProgress: CourseWithProgressWithCategory[];
-}
+};
 
-export const getDashboardCourses = async (userId: string): Promise<DashboardCourses> => {
+export const getDashboardCourses = async (
+  userId: string
+): Promise<DashboardCourses> => {
   try {
-    const purchasedCourses = await Purchase.find({ userId })
+    // Find all purchases for the user
+    const purchases = await Purchase.find({ userId }).lean();
+
+    // Get the course IDs from the purchases
+    const courseIds = purchases.map((purchase) => purchase.courseId);
+
+    // Fetch the courses with their categories and chapters
+    const courses = (await Course.find({ _id: { $in: courseIds } })
+      .populate("categoryId")
       .populate({
-        path: 'courseId',
-        populate: [
-          { path: 'category' },
-          { path: 'chapters', match: { isPublished: true } }
-        ]
+        path: "chapters",
+        match: { isPublished: true },
       })
-      .lean();
+      .lean()) as (ICourse & { _id: { toString(): string } })[];
 
-    const courses = purchasedCourses.map(purchase => purchase.courseId as unknown as CourseWithProgressWithCategory);
+    // Calculate progress for each course
+    const coursesWithProgress = await Promise.all(
+      courses.map(async (course) => {
+        const progress = await getProgress(userId, course._id.toString());
+        return { ...course, progress };
+      })
+    );
 
-    for (let course of courses) {
-      const progress = await getProgress(userId, course.id);
-      course.progress = progress;
-    }
+    // Separate completed courses from courses in progress
+    const completedCourses = coursesWithProgress.filter(
+      (course) => course.progress === 100
+    ) as CourseWithProgressWithCategory[];
 
-    const completedCourses = courses.filter((course) => course.progress === 100);
-    const coursesInProgress = courses.filter((course) => (course.progress ?? 0) < 100);
+    const coursesInProgress = coursesWithProgress.filter(
+      (course) => (course.progress ?? 0) < 100
+    ) as CourseWithProgressWithCategory[];
 
     return {
       completedCourses,
       coursesInProgress,
-    }
+    };
   } catch (error) {
-    console.log("[GET_DASHBOARD_COURSES]", error);
+    console.error("[GET_DASHBOARD_COURSES]", error);
     return {
       completedCourses: [],
       coursesInProgress: [],
-    }
+    };
   }
-}
+};
