@@ -5,6 +5,7 @@ import { useAccount } from "wagmi";
 import { useParams } from "next/navigation";
 import { toast } from "react-hot-toast";
 import axios from "axios";
+import useClerkAccount from "@/hooks/useClerkAccount";
 
 const MintButton = ({
   courseId,
@@ -13,10 +14,10 @@ const MintButton = ({
   courseId: string;
   videoNftUrl: string;
 }) => {
-  const { address } = useAccount();
+  // const { address } = useAccount();
   const [nftName, setNftName] = useState<string | null>(null);
   const [isMinting, setIsMinting] = useState(false);
-
+  const { address } = useClerkAccount();
   useEffect(() => {
     const fetchNftName = async () => {
       try {
