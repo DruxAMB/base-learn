@@ -1,7 +1,12 @@
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
-import { CircleDollarSign, File, LayoutDashboard, ListChecks } from "lucide-react";
-import { Types } from 'mongoose';
+import {
+  CircleDollarSign,
+  File,
+  LayoutDashboard,
+  ListChecks,
+} from "lucide-react";
+import { Types } from "mongoose";
 
 import { IconBadge } from "@/components/icon-badge";
 import { Banner } from "@/components/banner";
@@ -17,28 +22,30 @@ import { Actions } from "./_components/actions";
 import { Course, ICourse } from "@/mongodb/Course";
 import { Category } from "@/mongodb/Category";
 import { IChapter } from "@/mongodb/Chapter";
-import { IAttachment } from "@/mongodb/Attachment"; // Add this import
+import { Attachment, IAttachment } from "@/mongodb/Attachment"; // Update this import
 
-const CourseIdPage = async ({
-  params
-}: {
-  params: { courseId: string }
-}) => {
+const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
   const { userId } = auth();
 
   if (!userId) {
     return redirect("/");
   }
-  const course = await Course.findOne({
+
+  // Ensure Attachment model is registered before querying
+  await Attachment.init();
+
+  const course = (await Course.findOne({
     _id: new Types.ObjectId(params.courseId),
-    userId
-  }).populate([
-    { 
-      path: 'chapters', 
-      options: { sort: { position: 1 } },
-    },
-    { path: 'attachments', options: { sort: { createdAt: -1 } } }
-  ]).lean() as ICourse & { chapters: IChapter[]; attachments: IAttachment[] }; // Updated type assertion
+    userId,
+  })
+    .populate([
+      {
+        path: "chapters",
+        options: { sort: { position: 1 } },
+      },
+      { path: "attachments", options: { sort: { createdAt: -1 } } },
+    ])
+    .lean()) as ICourse & { chapters: IChapter[]; attachments: IAttachment[] }; // Updated type assertion
   const categories = await Category.find().sort({ name: 1 });
 
   if (!course) {
@@ -63,16 +70,12 @@ const CourseIdPage = async ({
   return (
     <>
       {!course.isPublished && (
-        <Banner
-          label="This course is unpublished. It will not be visible to the students."
-        />
+        <Banner label="This course is unpublished. It will not be visible to the students." />
       )}
       <div className="p-6">
         <div className="flex items-center justify-between">
           <div className="flex flex-col gap-y-2">
-            <h1 className="text-2xl font-medium">
-              Course setup
-            </h1>
+            <h1 className="text-2xl font-medium">Course setup</h1>
             <span className="text-sm text-slate-700">
               Complete all fields {completionText}
             </span>
@@ -87,22 +90,14 @@ const CourseIdPage = async ({
           <div>
             <div className="flex items-center gap-x-2">
               <IconBadge icon={LayoutDashboard} />
-              <h2 className="text-xl">
-                Customize your course
-              </h2>
+              <h2 className="text-xl">Customize your course</h2>
             </div>
-            <TitleForm
-              initialData={course}
-              courseId={course._id as string}
-            />
+            <TitleForm initialData={course} courseId={course._id as string} />
             <DescriptionForm
               initialData={course}
               courseId={course._id as string}
             />
-            <ImageForm
-              initialData={course}
-              courseId={params.courseId}
-            />
+            <ImageForm initialData={course} courseId={params.courseId} />
             <CategoryForm
               initialData={course}
               courseId={params.courseId}
@@ -116,9 +111,7 @@ const CourseIdPage = async ({
             <div>
               <div className="flex items-center gap-x-2">
                 <IconBadge icon={ListChecks} />
-                <h2 className="text-xl">
-                  Course chapters
-                </h2>
+                <h2 className="text-xl">Course chapters</h2>
               </div>
               <ChaptersForm
                 initialData={course}
@@ -128,21 +121,14 @@ const CourseIdPage = async ({
             <div>
               <div className="flex items-center gap-x-2">
                 <IconBadge icon={CircleDollarSign} />
-                <h2 className="text-xl">
-                  Sell your course
-                </h2>
+                <h2 className="text-xl">Sell your course</h2>
               </div>
-              <PriceForm
-                initialData={course}
-                courseId={course._id as string}
-              />
+              <PriceForm initialData={course} courseId={course._id as string} />
             </div>
             <div>
               <div className="flex items-center gap-x-2">
                 <IconBadge icon={File} />
-                <h2 className="text-xl">
-                  Resources & Attachments
-                </h2>
+                <h2 className="text-xl">Resources & Attachments</h2>
               </div>
               <AttachmentForm
                 initialData={course}
@@ -153,7 +139,7 @@ const CourseIdPage = async ({
         </div>
       </div>
     </>
-   );
-}
- 
+  );
+};
+
 export default CourseIdPage;
