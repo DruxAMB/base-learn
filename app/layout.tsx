@@ -13,8 +13,8 @@ import { initalizeContracts } from "@/lib/initalizeContracts";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Base Learn Academy",
-  description: "Base Learn Academy - all about base",
+  title: "Learn Onchain",
+  description: "OnchainLearn - learn all about base",
 };
 
 export default async function RootLayout({
