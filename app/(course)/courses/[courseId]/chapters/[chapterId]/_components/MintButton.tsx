@@ -6,13 +6,18 @@ import { useParams } from "next/navigation";
 import { toast } from "react-hot-toast";
 import axios from "axios";
 import useClerkAccount from "@/hooks/useClerkAccount";
+import { uploadNFT } from "@/pinata/uploadNFTMetaData";
 
 const MintButton = ({
   courseId,
   videoNftUrl,
+  title,
+  description,
 }: {
   courseId: string;
   videoNftUrl: string;
+  title: string;
+  description: string;
 }) => {
   // const { address } = useAccount();
   const [nftName, setNftName] = useState<string | null>(null);
@@ -41,9 +46,10 @@ const MintButton = ({
 
     setIsMinting(true);
     try {
+      const nftMetadata = await uploadNFT(videoNftUrl, title, description);
       const response = await axios.post(`/api/courses/${courseId}/mint`, {
         userAddress: address,
-        videoNftUrl,
+        videoNftUrl: nftMetadata.data,
       });
 
       console.log("Minting response:", response.data);
