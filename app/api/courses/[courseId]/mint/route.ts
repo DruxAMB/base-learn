@@ -90,3 +90,71 @@ export async function POST(
     return NextResponse.json({ error: "Failed to mint NFT" }, { status: 500 });
   }
 }
+
+export async function PUT(
+  req: Request,
+  { params }: { params: { courseId: string } }
+) {
+  try {
+    const { userId } = auth();
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const courseId = params.courseId;
+    const course = await Course.findById(courseId);
+
+    if (!course) {
+      return NextResponse.json({ error: "Course not found" }, { status: 404 });
+    }
+
+    // Initialize contracts if not already done
+    if (!contracts.courseNFT) {
+      initalizeContracts();
+    }
+
+    // Get the user's Ethereum address from the request body
+    const { userAddress } = await req.json();
+
+    if (!userAddress) {
+      return NextResponse.json(
+        { error: "User address is required" },
+        { status: 400 }
+      );
+    }
+
+    // Check if the user has already minted an NFT for this course
+    const tokenId = await contracts.courseNFT.read.getStudentTokenId([
+      BigInt(courseId),
+      userAddress,
+    ]);
+
+    if (tokenId > 0) {
+      const chainId = await client.getChainId();
+      let openseaUrl;
+
+      if (chainId === 8453) {
+        // Base Mainnet
+        openseaUrl = `https://opensea.io/assets/base/${contracts.courseNFT.address}/${tokenId}`;
+      } else if (chainId === 84531) {
+        // Base Sepolia
+        openseaUrl = `https://testnets.opensea.io/assets/base-sepolia/${contracts.courseNFT.address}/${tokenId}`;
+      } else {
+        openseaUrl = `https://testnets.opensea.io/assets/${contracts.courseNFT.address}/${tokenId}`;
+      }
+
+      return NextResponse.json(
+        { hasMinted: true, tokenId: tokenId.toString(), openseaUrl },
+        { status: 200 }
+      );
+    } else {
+      return NextResponse.json({ hasMinted: false }, { status: 200 });
+    }
+  } catch (error) {
+    console.error("[CHECK_NFT]", error);
+    return NextResponse.json(
+      { error: "Failed to check NFT status" },
+      { status: 500 }
+    );
+  }
+}
