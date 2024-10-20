@@ -79,6 +79,8 @@ const ChapterIdPage = async ({
               <MintButton
                 courseId={params.courseId}
                 videoNftUrl={chapter.videoUrl!}
+                title={chapter.title}
+                description={chapter.description!}
               />
             )}
           </div>
