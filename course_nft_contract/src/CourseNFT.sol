@@ -13,6 +13,9 @@ contract CourseNFT is ERC721, Ownable {
     // Mapping from token ID to course URL
     mapping(uint256 => string) private _courseUrls;
 
+    // Mapping from course ID to student address to token ID
+    mapping(uint256 => mapping(address => uint256)) private _studentTokens;
+
     // Add a modifier to check if the token exists
     modifier tokenExists(uint256 tokenId) {
         require(
@@ -32,16 +35,21 @@ contract CourseNFT is ERC721, Ownable {
         uint256 courseId,
         string memory courseUrl
     ) public onlyOwner returns (uint256) {
+        require(
+            _studentTokens[courseId][student] == 0,
+            "Student already has an NFT for this course"
+        );
+
         // Increment the token ID manually
         _currentTokenId++;
         uint256 newTokenId = _currentTokenId;
         _safeMint(student, newTokenId);
         _courseIds[newTokenId] = courseId;
         _courseUrls[newTokenId] = courseUrl;
+        _studentTokens[courseId][student] = newTokenId;
         return newTokenId;
     }
 
-    // Apply the tokenExists modifier to these functions
     function getCourseId(
         uint256 tokenId
     ) public view tokenExists(tokenId) returns (uint256) {
@@ -52,5 +60,12 @@ contract CourseNFT is ERC721, Ownable {
         uint256 tokenId
     ) public view tokenExists(tokenId) returns (string memory) {
         return _courseUrls[tokenId];
+    }
+
+    function getStudentTokenId(
+        uint256 courseId,
+        address student
+    ) public view returns (uint256) {
+        return _studentTokens[courseId][student];
     }
 }
