@@ -19,6 +19,7 @@ export const CourseEnrollButton = ({
   const [isLoading, setIsLoading] = useState(false);
   const onClick = async () => {
     try {
+      console.log(courseId);
       setIsLoading(true);
       await purchaseCourse(courseId);
       toast.success("Course purchased successfully");

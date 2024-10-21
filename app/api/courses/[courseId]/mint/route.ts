@@ -7,6 +7,23 @@ import {
 import { auth } from "@clerk/nextjs/server";
 import { Course } from "@/mongodb/Course";
 
+async function getOpenseaUrl(courseId: string, userAddress: string) {
+  const tokenId = await contracts.courseNFT.read.getStudentTokenId([
+    courseId, // Use the courseId directly as a string
+    userAddress,
+  ]);
+
+  const chainId = await client.getChainId();
+  let openseaUrl;
+  if (chainId === 8453) {
+    // Base Mainnet
+    openseaUrl = `https://opensea.io/assets/base/${contracts.courseNFT.address}/${tokenId}`;
+  } else {
+    // Base Sepolia
+    openseaUrl = `https://testnets.opensea.io/assets/base-sepolia/${contracts.courseNFT.address}/${tokenId}`;
+  }
+  return openseaUrl;
+}
 export async function GET(
   req: Request,
   { params }: { params: { courseId: string } }
@@ -82,6 +99,7 @@ export async function POST(
         message: "NFT minted successfully",
         transactionHash: transaction,
         tokenId: tokenId,
+        openseaUrl: await getOpenseaUrl(courseId, userAddress),
       },
       { status: 200 }
     );
@@ -124,25 +142,14 @@ export async function PUT(
     }
 
     // Check if the user has already minted an NFT for this course
-    const tokenId = await contracts.courseNFT.read.getStudentTokenId([
-      courseId, // Use the courseId directly as a string
-      userAddress,
-    ]);
-
-    if (tokenId > 0) {
-      const chainId = await client.getChainId();
-      console.log(chainId);
-      let openseaUrl;
-
-      if (chainId === 8453) {
-        // Base Mainnet
-        openseaUrl = `https://opensea.io/assets/base/${contracts.courseNFT.address}/${tokenId}`;
-      } else {
-        // Base Sepolia
-        openseaUrl = `https://testnets.opensea.io/assets/base-sepolia/${contracts.courseNFT.address}/${tokenId}`;
-      }
+    let openseaUrl = await getOpenseaUrl(courseId, userAddress);
+    if (openseaUrl) {
       return NextResponse.json(
-        { hasMinted: true, tokenId: tokenId.toString(), openseaUrl },
+        {
+          hasMinted: true,
+
+          openseaUrl,
+        },
         { status: 200 }
       );
     } else {
