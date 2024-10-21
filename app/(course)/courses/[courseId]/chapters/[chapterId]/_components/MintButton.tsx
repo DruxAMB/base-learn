@@ -48,6 +48,7 @@ const MintButton = ({
   }, [courseId, address]);
 
   const handleMintClick = async () => {
+    console.log("connected address", address);
     if (!address) {
       toast.error(
         "Please connect your wallet from your profile to mint a certificate."
