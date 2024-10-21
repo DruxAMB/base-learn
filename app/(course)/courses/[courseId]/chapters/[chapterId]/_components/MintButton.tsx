@@ -21,12 +21,14 @@ const MintButton = ({
 }) => {
   const [nftName, setNftName] = useState<string | null>(null);
   const [isMinting, setIsMinting] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [hasMinted, setHasMinted] = useState(false);
   const [openseaUrl, setOpenseaUrl] = useState<string | null>(null);
   const { address } = useClerkAccount();
 
   useEffect(() => {
     const fetchNftInfo = async () => {
+      setIsLoading(true);
       try {
         const nameResponse = await axios.get(`/api/courses/${courseId}/mint`);
         setNftName(nameResponse.data.name);
@@ -41,6 +43,8 @@ const MintButton = ({
         }
       } catch (error) {
         console.error("Failed to fetch NFT info:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -82,6 +86,14 @@ const MintButton = ({
       window.open(openseaUrl, "_blank");
     }
   };
+
+  if (isLoading) {
+    return (
+      <button className="px-4 py-2 rounded-md bg-gray-300 text-gray-700 cursor-not-allowed">
+        Loading...
+      </button>
+    );
+  }
 
   if (hasMinted) {
     return (
