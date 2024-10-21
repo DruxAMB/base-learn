@@ -34,7 +34,7 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
   // Ensure Attachment model is registered before querying
   await Attachment.init();
 
-  const course = (await Course.findOne({
+  const course = await Course.findOne({
     _id: new Types.ObjectId(params.courseId),
     userId,
   })
@@ -45,20 +45,24 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
       },
       { path: "attachments", options: { sort: { createdAt: -1 } } },
     ])
-    .lean()) as ICourse & { chapters: IChapter[]; attachments: IAttachment[] }; // Updated type assertion
-  const categories = await Category.find().sort({ name: 1 });
+    .lean();
+
+  const categories = await Category.find().sort({ name: 1 }).lean();
 
   if (!course) {
     return redirect("/");
   }
 
+  const plainCourse = JSON.parse(JSON.stringify(course));
+  const plainCategories = JSON.parse(JSON.stringify(categories));
+
   const requiredFields = [
-    course.title,
-    course.description,
-    course.imageUrl,
-    course.price,
-    course.categoryId,
-    course.chapters?.some((chapter: any) => chapter.isPublished),
+    plainCourse.title,
+    plainCourse.description,
+    plainCourse.imageUrl,
+    plainCourse.price,
+    plainCourse.categoryId,
+    plainCourse.chapters?.some((chapter: any) => chapter.isPublished),
   ];
 
   const totalFields = requiredFields.length;
@@ -92,19 +96,21 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
               <IconBadge icon={LayoutDashboard} />
               <h2 className="text-xl">Customize your course</h2>
             </div>
-            <TitleForm initialData={course} courseId={course._id as string} />
+            <TitleForm initialData={plainCourse} courseId={plainCourse._id} />
             <DescriptionForm
-              initialData={course}
-              courseId={course._id as string}
+              initialData={plainCourse}
+              courseId={plainCourse._id}
             />
-            <ImageForm initialData={course} courseId={params.courseId} />
+            <ImageForm initialData={plainCourse} courseId={params.courseId} />
             <CategoryForm
-              initialData={course}
+              initialData={plainCourse}
               courseId={params.courseId}
-              options={categories.map((category) => ({
-                label: category.name,
-                value: category.id,
-              }))}
+              options={plainCategories.map(
+                (category: { name: string; _id: string }) => ({
+                  label: category.name,
+                  value: category._id,
+                })
+              )}
             />
           </div>
           <div className="space-y-6">
@@ -114,8 +120,8 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
                 <h2 className="text-xl">Course chapters</h2>
               </div>
               <ChaptersForm
-                initialData={course}
-                courseId={course._id as string}
+                initialData={plainCourse}
+                courseId={plainCourse._id}
               />
             </div>
             <div>
@@ -123,7 +129,7 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
                 <IconBadge icon={CircleDollarSign} />
                 <h2 className="text-xl">Sell your course</h2>
               </div>
-              <PriceForm initialData={course} courseId={course._id as string} />
+              <PriceForm initialData={plainCourse} courseId={plainCourse._id} />
             </div>
             <div>
               <div className="flex items-center gap-x-2">
@@ -131,8 +137,8 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
                 <h2 className="text-xl">Resources & Attachments</h2>
               </div>
               <AttachmentForm
-                initialData={course}
-                courseId={course._id as string}
+                initialData={plainCourse}
+                courseId={plainCourse._id}
               />
             </div>
           </div>

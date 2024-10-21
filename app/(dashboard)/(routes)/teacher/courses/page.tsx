@@ -14,7 +14,7 @@ const CoursesPage = async () => {
   const courses = await Course.find({ userId }).sort({ createdAt: -1 }).lean();
 
   const formattedCourses = courses.map((course) => ({
-    ...course,
+    ...JSON.parse(JSON.stringify(course)),
     id: course._id.toString(),
   }));
 
