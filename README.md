@@ -21,11 +21,19 @@ LearnOnchain is a cutting-edge, blockchain-integrated Learning Management System
 - **Frontend**: Next.js 13, React, Tailwind CSS
 - **Backend**: Node.js, MongoDB
 - **Blockchain**: Solidity, Base Sepolia network
-- **Authentication**: Onchainkit
+- **Authentication**: Clerk with Coinbase Developer Platform
 - **File Storage**: UploadThing, Pinata
-- **Payment Processing**: Stripe (for traditional payments)
+- **Payment Processing**: Smart Wallet,Onchainkit, Stripe (for traditional payments)
 - **Smart Contract Interaction**: Wagmi
 - **Video Streaming**: HLS with Pinata
+- **Basename Viewing**: Onchainkit
+
+
+## 🔗 Links
+- **link to devolio project**: devfolio.co/projects/base-… 
+- **link to live-site**: base-learn.vercel.app 
+- **link to X**: x.com/onchainlearn  
+
 
 ## 🔧 Setup & Installation
 
