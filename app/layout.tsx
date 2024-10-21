@@ -9,6 +9,7 @@ import { ConfettiProvider } from "@/components/providers/confetti-provider";
 import OnchainProvider from "@/providers/OnchainKitProvider";
 import { connectToMongoDB } from "@/lib/db";
 import { initalizeContracts } from "@/lib/initalizeContracts";
+import LoadingState from "@/components/loading-state";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,7 +24,6 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   await connectToMongoDB();
-
   initalizeContracts();
 
   return (
@@ -31,9 +31,11 @@ export default async function RootLayout({
       <OnchainProvider>
         <html lang="en">
           <body className={inter.className}>
-            <ConfettiProvider />
-            <ToastProvider />
-            {children}
+            <LoadingState>
+              <ConfettiProvider />
+              <ToastProvider />
+              {children}
+            </LoadingState>
           </body>
         </html>
       </OnchainProvider>
