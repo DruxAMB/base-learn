@@ -1,10 +1,12 @@
 import { AxiosResponse } from "axios";
 import axios from "axios";
-const PINATA_API_KEY = process.env.VITE_PINATA_API_KEY;
-const PINATA_SECRET_API_KEY = process.env.VITE_PINATA_SECRET_API_KEY;
 
+const PINATA_SECRET_API_KEY = process.env
+  .NEXT_PUBLIC_PINATA_SECRET_API_KEY as string;
+const PINATA_API_KEY = process.env.NEXT_PUBLIC_PINATA_API_KEY as string;
 export const pinJSONToIPFS = async (JSONBody: Object) => {
   const url = `https://api.pinata.cloud/pinning/pinJSONToIPFS`;
+
   //making axios POST request to Pinata ⬇️
   return axios
     .post(url, JSONBody, {
@@ -58,6 +60,7 @@ export const uploadNFT = async (
     success: boolean;
     pinataUrl: string;
   };
+  console.log("Pinata response:", pinataResponse);
   if (!pinataResponse.success) {
     return {
       success: false,

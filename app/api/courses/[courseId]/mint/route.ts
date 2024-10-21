@@ -65,7 +65,7 @@ export async function POST(
     // Mint the NFT
     const transaction = await contracts.courseNFT.write.mint([
       userAddress,
-      BigInt(courseId),
+      courseId, // Use the courseId directly as a string
       nftMetadata,
     ]);
 
@@ -125,24 +125,22 @@ export async function PUT(
 
     // Check if the user has already minted an NFT for this course
     const tokenId = await contracts.courseNFT.read.getStudentTokenId([
-      BigInt(courseId),
+      courseId, // Use the courseId directly as a string
       userAddress,
     ]);
 
     if (tokenId > 0) {
       const chainId = await client.getChainId();
+      console.log(chainId);
       let openseaUrl;
 
       if (chainId === 8453) {
         // Base Mainnet
         openseaUrl = `https://opensea.io/assets/base/${contracts.courseNFT.address}/${tokenId}`;
-      } else if (chainId === 84531) {
+      } else {
         // Base Sepolia
         openseaUrl = `https://testnets.opensea.io/assets/base-sepolia/${contracts.courseNFT.address}/${tokenId}`;
-      } else {
-        openseaUrl = `https://testnets.opensea.io/assets/${contracts.courseNFT.address}/${tokenId}`;
       }
-
       return NextResponse.json(
         { hasMinted: true, tokenId: tokenId.toString(), openseaUrl },
         { status: 200 }
