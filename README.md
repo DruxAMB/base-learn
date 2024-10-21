@@ -30,9 +30,9 @@ LearnOnchain is a cutting-edge, blockchain-integrated Learning Management System
 
 
 ## 🔗 Links
-- **link to devolio project**: devfolio.co/projects/base-… 
-- **link to live-site**: base-learn.vercel.app 
-- **link to X**: x.com/onchainlearn  
+- [link to devolio project](https://devfolio.co/projects/base-learn-7633)
+- [link to live-site](https://base-learn.vercel.app)
+- [link to X](https://x.com/onchainlearn)
 
 
 ## 🔧 Setup & Installation
