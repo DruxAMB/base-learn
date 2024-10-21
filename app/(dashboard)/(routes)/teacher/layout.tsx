@@ -7,9 +7,9 @@ const TeacherLayout = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const { userId } = auth();
+  const { orgId } = auth();
 
-  if (!isTeacher(userId)) {
+  if (!isTeacher(orgId)) {
     return redirect("/");
   }
 

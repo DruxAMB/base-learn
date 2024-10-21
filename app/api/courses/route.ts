@@ -8,10 +8,10 @@ export async function POST(
   req: Request,
 ) {
   try {
-    const { userId } = auth();
+    const { userId, orgId } = auth();
     const { title } = await req.json();
 
-    if (!userId || !isTeacher(userId)) {
+    if (!userId || !isTeacher(orgId)) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 

@@ -1,8 +1,14 @@
 "use client";
 
-import { ClerkLoaded, ClerkLoading, UserButton, useAuth } from "@clerk/nextjs";
+import {
+  ClerkLoaded,
+  ClerkLoading,
+  OrganizationSwitcher,
+  UserButton,
+  useAuth,
+} from "@clerk/nextjs";
 import { usePathname } from "next/navigation";
-import { Loader2, LogOut } from "lucide-react";
+import { Building2, Car, Loader2, LogOut } from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
@@ -12,11 +18,8 @@ import { SearchInput } from "./search-input";
 import Basename from "./basename";
 
 export const NavbarRoutes = () => {
-  const { userId } = useAuth();
+  const { orgId } = useAuth();
   const pathname = usePathname();
-
-  console.log(isTeacher(userId));
-  
 
   const isTeacherPage = pathname?.startsWith("/teacher");
   const isCoursePage = pathname?.includes("/courses");
@@ -37,7 +40,7 @@ export const NavbarRoutes = () => {
               Exit
             </Button>
           </Link>
-        ) : isTeacher(userId) ? (
+        ) : isTeacher(orgId) ? (
           <Link href="/teacher/courses">
             <Button size="sm" variant="ghost">
               Teacher mode
@@ -45,15 +48,25 @@ export const NavbarRoutes = () => {
           </Link>
         ) : null}
         <div className="flex gap2">
-            <Basename /> 
-            <ClerkLoaded>
-              <UserButton />
-            </ClerkLoaded>
-            <ClerkLoading>
-              <Loader2 className="size-8 animate-spin text-slate-800" />
-            </ClerkLoading>
-          </div>
+          <Basename />
+          <ClerkLoaded>
+            <UserButton>
+              <UserButton.UserProfilePage
+                label="Organization"
+                labelIcon={<Building2 className="h-4 w-4" />}
+                url="organization"
+              >
+                <h1><b>Organizations</b></h1>
+                <hr className="my-4" />
+                <OrganizationSwitcher />
+              </UserButton.UserProfilePage>
+            </UserButton>
+          </ClerkLoaded>
+          <ClerkLoading>
+            <Loader2 className="size-8 animate-spin text-slate-800" />
+          </ClerkLoading>
+        </div>
       </div>
     </>
-  )
-}
+  );
+};
