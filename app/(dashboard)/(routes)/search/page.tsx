@@ -37,6 +37,10 @@ const SearchPage = async ({ searchParams }: SearchPageProps) => {
   await Attachment.find({ userId }).sort({ createdAt: -1 }).lean();
   await UserProgress.find({ userId }).sort({ createdAt: -1 }).lean();
   await Purchase.find({ userId }).sort({ createdAt: -1 }).lean();
+
+  const plainCategories = JSON.parse(JSON.stringify(categories));
+  const plainCourses = JSON.parse(JSON.stringify(courses));
+
   return (
     <>
       <div className="px-6 pt-6 md:hidden md:mb-0 block">
@@ -44,9 +48,9 @@ const SearchPage = async ({ searchParams }: SearchPageProps) => {
       </div>
       <div className="p-6 space-y-4">
         <Categories
-          items={categories as any[]} // Type assertion as a temporary fix
+          items={plainCategories} // Type assertion as a temporary fix
         />
-        <CoursesList items={courses} />
+        <CoursesList items={plainCourses} />
       </div>
     </>
   );
