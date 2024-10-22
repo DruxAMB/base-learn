@@ -15,7 +15,10 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Learn Onchain",
-  description: "OnchainLearn - learn all about base",
+  description: "OnchainLearn - Empowering communities to learn and build onchain solutions with learnOnchain, an LMS platform to foster innovation and bring the next billion users Onchain.",
+  icons: {
+    icon: '/favicon.ico',
+  },
 };
 
 export default async function RootLayout({
