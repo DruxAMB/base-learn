@@ -1,5 +1,3 @@
-import ComingSoon from "@/components/coming-soon";
-
 const AuthLayout = ({
   children
 }: {
@@ -7,8 +5,7 @@ const AuthLayout = ({
 }) => {
   return ( 
     <div className="h-full flex items-center justify-center">
-      <ComingSoon />
-      {/* {children} */}
+      {children}
     </div>
    );
 }
