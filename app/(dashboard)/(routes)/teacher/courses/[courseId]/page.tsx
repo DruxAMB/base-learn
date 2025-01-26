@@ -25,7 +25,7 @@ import { IChapter } from "@/mongodb/Chapter";
 import { Attachment, IAttachment } from "@/mongodb/Attachment"; // Update this import
 
 const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
-  const { userId } = auth();
+  const { userId } = await auth();
 
   if (!userId) {
     return redirect("/");

@@ -9,7 +9,7 @@ import { InfoCard } from "./_components/info-card";
 import WelcomeBanner from "../../_components/WelcomeBanner";
 
 export default async function Dashboard() {
-  const { userId } = auth();
+  const { userId } = await auth();
 
   if (!userId) {
     return redirect("/");

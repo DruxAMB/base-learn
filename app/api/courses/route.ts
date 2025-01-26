@@ -8,7 +8,7 @@ export async function POST(
   req: Request,
 ) {
   try {
-    const { userId, orgId } = auth();
+    const { userId, orgId } = await auth();
     const { title } = await req.json();
 
     if (!userId || !isTeacher(orgId)) {

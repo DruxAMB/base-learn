@@ -5,7 +5,7 @@ import { columns } from "./_components/columns";
 import { Course } from "@/mongodb/Course";
 
 const CoursesPage = async () => {
-  const { userId } = auth();
+  const { userId } = await auth();
 
   if (!userId) {
     return redirect("/");
