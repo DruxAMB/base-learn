@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
+    "lint": "next lint"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.10.2",
@@ -39,6 +40,7 @@
     "encoding": "^0.1.13",
     "eslint": "8.49.0",
     "eslint-config-next": "^14.2.15",
+    "framer-motion": "^12.0.3",
     "lucide-react": "^0.276.0",
     "mongodb": "^6.9.0",
     "mongoose": "^8.7.0",

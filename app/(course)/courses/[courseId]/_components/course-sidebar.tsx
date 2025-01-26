@@ -21,7 +21,6 @@ export const CourseSidebar = async ({
   progressCount,
 }: CourseSidebarProps) => {
   const { userId } = await  auth();
-
   if (!userId) {
     return redirect("/");
   }
