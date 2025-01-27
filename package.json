@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@clerk/localizations": "^3.10.1",
     "@clerk/nextjs": "^6.10.2",
     "@coinbase/onchainkit": "^0.34.0",
     "@hello-pangea/dnd": "^16.3.0",
