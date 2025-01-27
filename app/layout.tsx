@@ -21,6 +21,23 @@ export const metadata: Metadata = {
   },
 };
 
+const localization = {
+  waitlist: {
+    start: {
+      actionLink: 'Sign in',
+      actionText: 'Already have access?',
+      formButton: 'Join the waitlist',
+      subtitle: 'Enter your email address and we’ll let you know when your spot is ready',
+      title: 'Join the waitlist',
+    },
+    success: {
+      message: 'You will be redirected soon...',
+      subtitle: 'We’ll be in touch when your spot is ready. Stay based!',
+      title: 'Thanks for joining the waitlist!',
+    },
+  },
+}
+
 export default async function RootLayout({
   children,
 }: {
@@ -30,7 +47,7 @@ export default async function RootLayout({
   initalizeContracts();
 
   return (
-    <ClerkProvider>
+    <ClerkProvider localization={localization}>
       <OnchainProvider>
         <html lang="en">
           <body className={inter.className}>
