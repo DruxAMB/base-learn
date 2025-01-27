@@ -14,7 +14,7 @@ import LoadingState from "@/components/loading-state";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Learn Onchain",
+  title: "learnOnchain",
   description: "OnchainLearn - Empowering communities to learn and build onchain solutions with learnOnchain, an LMS platform to foster innovation and bring the next billion users Onchain.",
   icons: {
     icon: '/favicon.ico',
